@@ -1,3 +1,5 @@
+pub mod drive;
+
 use std::io::{self, Read};
 
 /// Эфемерный сенсор: однократно «трогаем» stdin.
@@ -14,7 +16,7 @@ pub fn evaluate_stdin_once() -> io::Result<bool> {
 /// «Жизнь» агента: бесконечная готовность на блокирующем чтении stdin.
 /// Вызывает `on_chunk` на каждом успешно прочитанном ненулевом куске.
 /// Возвращает Ok(()) при EOF (смерть) или ошибку ввода-вывода.
-pub fn run_stdin_forver<F>(mut on_chunk: F) -> io::Result<()>
+pub fn run_stdin_forever<F>(mut on_chunk: F) -> io::Result<()>
 where
     F: FnMut(&[u8]),
 {
@@ -31,3 +33,4 @@ where
         on_chunk(&buf[..n]);
     }
 }
+

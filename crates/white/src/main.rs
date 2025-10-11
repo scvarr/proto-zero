@@ -1,5 +1,9 @@
+//! WHITE: анатомический двойник BLACK, имеет право логирования метрик.
+//! Stage-2 (ADR-011): тот же drive_update; метрики печатаем в stdout.
+
 use serde::Serialize;
-use protozero_core::{run_stdin_forver};
+use protozero_core::{run_stdin_forever};
+use protozero_core::drive::drive_update;
 
 #[derive(Serialize)]
 struct Metrics<'a> {
@@ -25,11 +29,11 @@ fn main() {
     let mut drive_0: f64 = 0.0;
 
     // На каждое событие записываем метрику (одна JSON-строка).
-    let _ = run_stdin_forver(|_chunk| {
-        drive_0 += 1.0;
+    let _ = run_stdin_forever(|_chunk| {
+        drive_0 = drive_update(drive_0);
         let m = Metrics {
             agent: "white",
-            stage: "Stage-0",
+            stage: "Stage-2",
             sensor: SensorMetrics { has_any: true },
             drive: DriveMetrics { d0: drive_0 },
         };
