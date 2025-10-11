@@ -1,0 +1,9 @@
+[workspace]
+members = [
+  "proto-ports",
+  "kernel-core",
+  "kernel-black",
+  "kernel-white",
+  "world-noise"
+]
+resolver = "2"

@@ -1,0 +1,7 @@
+target
+.git
+docker/dist
+docker/cache
+**/.git
+**/target
+**/.DS_Store
