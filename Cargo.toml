@@ -1,9 +1,7 @@
 [workspace]
-members = [
-  "proto-ports",
-  "kernel-core",
-  "kernel-black",
-  "kernel-white",
-  "world-noise"
-]
+members = ["crates/core", "crates/black", "crates/white"]
 resolver = "2"
+
+[workspace.package]
+edition = "2024"
+license = "MIT"

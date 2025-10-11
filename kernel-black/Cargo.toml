@@ -1,8 +1,0 @@
-[package]
-name = "kernel-black"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-kernel-core = { path = "../kernel-core" }
-proto-ports = { path = "../proto-ports" }
