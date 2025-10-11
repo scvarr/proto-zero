@@ -1,0 +1,27 @@
+volumes:
+  pz-io: {}
+  pz-lock: {}
+
+services:
+  fifo-init:
+    image: alpine
+    command: ["/bin/sh","-lc","mkfifo -m 666 /io/stream || true; tail -f /dev/null"]
+    volumes: ["pz-io:/io"]
+
+  lock-black:
+    image: alpine
+    command: ["/bin/sh","-lc","mkdir -p /lock && echo 1 > /lock/BLACK && tail -f /dev/null"]
+    volumes: ["pz-lock:/lock"]
+
+  world:
+    build: { context: ., dockerfile: docker/world.Dockerfile }
+    depends_on: [ fifo-init, lock-black ]
+    volumes: ["pz-io:/io"]
+    entrypoint: ["/bin/sh","-lc","cat /dev/urandom | world --source=stdin --chunk=1 > /io/stream"]
+
+  black:
+    build: { context: ., dockerfile: docker/black.Dockerfile }
+    depends_on: [ fifo-init, lock-black, world ]
+    volumes: ["pz-io:/io","pz-lock:/lock"]
+    # Шим проверяет конфликт (наличие WHITE-лока), затем подаёт поток в stdin black
+    entrypoint: ["/bin/sh","-lc","test -f /lock/WHITE && echo 'Conflict: WHITE stack running' >&2 && exit 42 || true; cat /io/stream | black"]
