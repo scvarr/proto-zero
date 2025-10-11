@@ -1,5 +1,5 @@
 use serde::Serialize;
-use core::evaluate_stdin_once;
+use protozero_core::{run_stdin_forver};
 
 #[derive(Serialize)]
 struct Metrics<'a> {
@@ -14,14 +14,13 @@ struct SensorMetrics {
 }
 
 fn main() {
-    // Та же логика сенсора, но white имеет право логировать метрики.
-    let has_any = evaluate_stdin_once().unwrap_or(false);
-
-    let m = Metrics {
-        agent: "white",
-        stage: "Stage-0",
-        sensor: SensorMetrics { has_any },
-    };
-
-    println!("{}", serde_json::to_string(&m).unwrap());
+    // На каждое событие записываем метрику (одна JSON-строка).
+    let _ = run_stdin_forver(|_chunk| {
+        let m = Metrics {
+            agent: "white",
+            stage: "Stage-0",
+            sensor: SensorMetrics { has_any: true },
+        };
+        println!("{}", serde_json::to_string(&m).unwrap());
+    });    
 }

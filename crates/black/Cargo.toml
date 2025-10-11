@@ -4,4 +4,4 @@ version = "0.1.0"
 edition.workspace = true
 
 [dependencies]
-core = { path = "../core" }
+protozero_core = { path = "../core" }

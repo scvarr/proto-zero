@@ -1,4 +1,17 @@
 services:
+  fifo-init:
+    image: alpine
+    command: [ "/bin/sh", "-lc", "mkfifo -m 666 /io/stream && tail -f /dev/null" ]
+    volumes: [ "pz-io:/io" ]
+
+  world:
+    build: { context: ., dockerfile: docker/world.Dockerfile }
+    depends_on: [ fifo-init ]
+    volumes: [ "pz-io:/io" ]
+    command: [ "--source=stdin" ]  # по умолчанию stdin->stdout
+    # подаём шум из urandom в stdin мира:
+    entrypoint: [ "/bin/sh","-lc","cat /dev/urandom | world --source=stdin --chunk=1 > /io/stream" ]
+
   black:
     build:
       context: .
@@ -7,6 +20,10 @@ services:
     # stdin: true позволяет подать данные через pipe при запуске
     stdin_open: true
     tty: false
+    depends_on:
+      - fifo-init
+      - world
+    restart: "no"
 
   white:
     build:
@@ -16,4 +33,6 @@ services:
     stdin_open: true
     tty: false
     depends_on:
-      - black
+      - fifo-init
+      - world
+    restart: "no"
