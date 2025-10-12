@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "future/ADR-014-proto-differential-drive.md",
+                "file": "21-adr/ADR-021-configurable-world.md.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "ADR-014-proto-differential-drive"
+              "title": "ADR-021-configurable-world.md"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "future/ADR-014-proto-differential-drive.md",
+                "file": "21-adr/ADR-021-configurable-world.md.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Обратные ссылки для ADR-014-proto-differential-drive"
+              "title": "Обратные ссылки для ADR-021-configurable-world.md"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "future/ADR-014-proto-differential-drive.md",
+                "file": "21-adr/ADR-021-configurable-world.md.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Исходящие ссылки из ADR-014-proto-differential-drive"
+              "title": "Исходящие ссылки из ADR-021-configurable-world.md"
             }
           },
           {
@@ -142,13 +142,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "future/ADR-014-proto-differential-drive.md",
+                "file": "21-adr/ADR-021-configurable-world.md.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура ADR-014-proto-differential-drive"
+              "title": "Структура ADR-021-configurable-world.md"
             }
           }
         ]
@@ -171,31 +171,34 @@
   },
   "active": "6082099e27f6310c",
   "lastOpenFiles": [
-    "02-invariants.md",
-    "01-glossary.md",
-    "recovery/stage-1.md",
     "roadmap/ADR-ROADMAP.md",
+    "15-adr/ADR-015-crisis-of-silence.md",
     "future/ADR-019-internal-sensor-self-observation.md",
     "future/ADR-018-sensorimotor-calibration.md",
     "future/ADR-017-bidirectional-coupling.md",
     "future/ADR-016-event-based-decay.md",
-    "future/ADR-015-crisis-of-silence.md",
-    "future/ADR-014-proto-differential-drive.md",
+    "15-adr",
+    "20-adr/ADR-020-semantic-framing.md",
+    "14-adr/ADR-014-proto-differential-drive.md",
+    "ADR-015.md",
+    "21-adr/ADR-021-configurable-world.md.md",
+    "21-adr",
+    "20-adr",
+    "13-adr/ADR-013-crisis-of-saturation-blindness.md",
+    "14-adr",
+    "02-invariants.md",
+    "01-glossary.md",
+    "recovery/stage-1.md",
     "08-adr/ADR-008-crisis-of-observation-saturation.md",
     "07-adr/ADR-007-world-as-container.md",
     "06-adr/ADR-006-life-as-blocking-loop.md",
     "12-adr/ADR-012-crisis-candidates-and-selected.md",
-    "13-adr/ADR-013-crisis-of-saturation-blindness.md",
     "11-adr/ADR-011-drive-regulation.md",
     "10-adr/ADR-010-crisis-of-drive-saturation.md",
     "09-adr/ADR-009-drive-0-introduction.md",
     "07-adr/ADR-007a-routing-and-mutex-via-fifo-and-lock.md",
     "05-adr/ADR-005-container-isolate.md",
     "04-adr/ADR-004-no-time-no-memory.md",
-    "03-adr/ADR-003-no-output-before-motor.md",
-    "02-adr/ADR-002-drives-are-latent.md",
-    "01-adr/ADR-001a-sensor-transport-stdin.md",
-    "01-adr/ADR-001-minimal-input-ephemeral.md",
-    "00-core/ADR-000-null-core.md"
+    "03-adr/ADR-003-no-output-before-motor.md"
   ]
 }

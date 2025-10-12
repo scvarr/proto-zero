@@ -5,13 +5,12 @@ mod metrics;
 
 use std::net::SocketAddr;
 use std::thread;
-use std::time::Duration;
 use metrics::{start_metrics_server, DRIVE0, EVENTS_TOTAL};
 
 use serde::Serialize;
 use protozero_core::{run_stdin_forever, DriveDiff};
-use protozero_core::drive::drive_update;
-use crate::metrics::DRIVE0_DELTA;
+use protozero_core::drive::{drive_update, FrameCounter};
+use crate::metrics::{DRIVE0_DELTA, DRIVE0_FRAME, DRIVE0_FRAME_DELTA, FRAMES_TOTAL};
 
 #[derive(Serialize)]
 struct Metrics<'a> {
@@ -44,33 +43,35 @@ fn main() {
         rt.block_on(start_metrics_server(addr));
     });
 
-    // Внутреннее состояние драйва (эфемерно).
-    let mut drive_0: f64 = 0.0;
-    let mut diff = DriveDiff::new();
+    let mut d_global = 0.0;
+    let mut d_global_diff = DriveDiff::new();
 
-    let log_json = std::env::var("WHITE_LOG_JSON").ok().as_deref() != Some("0");
+    let mut frame = FrameCounter::new();
+    let mut d_frame_prev: f64 = 0.0;
 
-    // На каждое событие записываем метрику (одна JSON-строка).
-    let _ = run_stdin_forever(|_chunk| {
-        drive_0 = drive_update(drive_0);
-        let delta = diff.step(drive_0);
+    let _ = run_stdin_forever(|chunk: &[u8]| {
+        for &b in chunk {
+            if b == b'\n' {
+                frame.on_boundary();
+                d_frame_prev = 0.0;
+                continue;
+            }
 
-        // Обновляем экспортируемые метрики (тред-safe через атомики внутри Prometheus)
-        DRIVE0.set(drive_0);
-        DRIVE0_DELTA.set(delta);
-        EVENTS_TOTAL.inc();
+            // глобальный
+            d_global = drive_update(d_global);
+            let dg = d_global_diff.step(d_global);
+            DRIVE0.set(d_global);
+            DRIVE0_DELTA.set(dg);
 
+            // покадровый
+            let d_frame = frame.on_event();
+            let df_delta = d_frame - d_frame_prev;
+            d_frame_prev = d_frame;
 
-        thread::sleep(Duration::from_millis(100));
-        // (Опционально) печать JSON, можно отключить env-переменной
-        if log_json {
-            let m = Metrics {
-                agent: "white",
-                stage: "Stage-2",
-                sensor: SensorMetrics { has_any: true },
-                drive: DriveMetrics { d0: drive_0, delta },
-            };
-            println!("{}", serde_json::to_string(&m).unwrap());
+            DRIVE0_FRAME.set(d_frame);
+            DRIVE0_FRAME_DELTA.set(df_delta);
+
+            EVENTS_TOTAL.inc();
         }
     });
 }

@@ -24,6 +24,22 @@ pub static EVENTS_TOTAL: Lazy<IntCounter> = Lazy::new(|| {
     c
 });
 
+pub static DRIVE0_FRAME: Lazy<Gauge> = Lazy::new(|| {
+    let g = Gauge::with_opts(Opts::new("protozero_drive_0_frame", "Drive-0 per frame in [0,1)")).unwrap();
+    REGISTRY.register(Box::new(g.clone())).unwrap();
+    g
+});
+pub static DRIVE0_FRAME_DELTA: Lazy<Gauge> = Lazy::new(|| {
+    let g = Gauge::with_opts(Opts::new("protozero_drive_delta_frame", "Delta of frame drive per event")).unwrap();
+    REGISTRY.register(Box::new(g.clone())).unwrap();
+    g
+});
+pub static FRAMES_TOTAL: Lazy<IntCounter> = Lazy::new(|| {
+    let c = IntCounter::with_opts(Opts::new("protozero_frames_total", "Number of frame boundaries")).unwrap();
+    REGISTRY.register(Box::new(c.clone())).unwrap();
+    c
+});
+
 async fn metrics_handler() -> String {
     let encoder = TextEncoder::new();
     let metric_families = REGISTRY.gather();

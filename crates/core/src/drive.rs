@@ -27,6 +27,19 @@ impl DriveDiff {
     }
 }
 
+/// Локальный счётчик кадра (без времени): сбрасывается на маркере.
+#[derive(Debug, Clone, Copy)]
+pub struct FrameCounter { n: u64 }
+impl FrameCounter {
+    pub fn new() -> Self { Self { n: 0 } }
+    #[inline] pub fn on_event(&mut self) -> f64 {
+        self.n = self.n.saturating_add(1);
+        let nf = self.n as f64;
+        nf / (nf + 1.0) // d_f = n_f/(n_f+1)
+    }
+    #[inline] pub fn on_boundary(&mut self) { self.n = 0; }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

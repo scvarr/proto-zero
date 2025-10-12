@@ -19,16 +19,18 @@ services:
     build: { context: ., dockerfile: docker/world.Dockerfile }
     depends_on: [ fifo-init, lock-white ]
     volumes: ["pz-io:/io"]
-    entrypoint: ["/bin/sh","-lc","cat /dev/urandom | world --source=stdin --chunk=1 > /io/stream"]
+    ports:
+      - "8080:8080"
+    entrypoint: ["/bin/sh","-lc","test -p /io/stream || mkfifo -m 666 /io/stream; exec world > /io/stream"]
 
   white:
     build: { context: ., dockerfile: docker/white.Dockerfile }
     environment:
-      - WHITE_LOG_JSON=0
+      - WHITE_METRICS_ADDR=0.0.0.0:9100   # эндпоинт /metrics
     depends_on: [ fifo-init, lock-white, world ]
     volumes: ["pz-io:/io","pz-lock:/lock"]
     # Шим проверяет конфликт (наличие BLACK-лока), затем подаёт поток в stdin white
-    entrypoint: ["/bin/sh","-lc","test -f /lock/BLACK && echo 'Conflict: BLACK stack running' >&2 && exit 42 || true; cat /io/stream | white"]
+    entrypoint: ["/bin/sh","-lc","test -f /lock/BLACK && echo 'Conflict: BLACK stack running' >&2 && exit 42 || true; exec cat /io/stream | white"]
 
   prometheus:
     image: prom/prometheus:latest
