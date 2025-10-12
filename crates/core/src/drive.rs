@@ -1,5 +1,4 @@
-//! Stage-2 (ADR-011): параметр-свободная регуляция drive_0.
-//! Состояние d ∈ [0,1); событие: d ← 1 / (2 - d)
+//! Stage-2..3: drive и его дифференциал (ADR-011, ADR-014)
 
 #[inline]
 pub fn drive_update(d: f64) -> f64 {
@@ -7,6 +6,25 @@ pub fn drive_update(d: f64) -> f64 {
     let next = 1.0 / (2.0 - d);
     // Чисто для численной устойчивости на правой границе:
     next.clamp(0.0, 1.0 - f64::EPSILON)
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct DriveDiff {
+    prev: f64,
+}
+
+impl DriveDiff {
+    #[inline]
+    pub fn new() -> Self {
+        Self { prev: 0.0 }
+    }
+
+    #[inline]
+    pub fn step(&mut self, current: f64) -> f64 {
+        let delta = current - self.prev;
+        self.prev = current;
+        delta
+    }
 }
 
 #[cfg(test)]

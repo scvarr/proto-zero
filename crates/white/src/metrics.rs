@@ -5,11 +5,19 @@ use std::net::SocketAddr;
 use tokio::net::TcpListener;
 
 pub static REGISTRY: Lazy<Registry> = Lazy::new(Registry::new);
+
 pub static DRIVE0: Lazy<Gauge> = Lazy::new(|| {
     let g = Gauge::with_opts(Opts::new("protozero_drive_0", "Drive-0 in [0,1)")).unwrap();
     REGISTRY.register(Box::new(g.clone())).unwrap();
     g
 });
+
+pub static DRIVE0_DELTA: Lazy<Gauge> = Lazy::new(|| {
+    let g = Gauge::with_opts(Opts::new("protozero_drive_delta", "Delta of Drive-0 per event")).unwrap();
+    REGISTRY.register(Box::new(g.clone())).unwrap();
+    g
+});
+
 pub static EVENTS_TOTAL: Lazy<IntCounter> = Lazy::new(|| {
     let c = IntCounter::with_opts(Opts::new("protozero_events_total", "Total input events")).unwrap();
     REGISTRY.register(Box::new(c.clone())).unwrap();

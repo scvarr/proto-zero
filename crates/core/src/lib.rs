@@ -1,5 +1,5 @@
 pub mod drive;
-
+pub use drive::{drive_update, DriveDiff};
 use std::io::{self, Read};
 
 /// Эфемерный сенсор: однократно «трогаем» stdin.
