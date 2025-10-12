@@ -2,7 +2,7 @@
 
 **Статус:** accepted  
 **Дата:** 2025-10-12  
-**Связанные:** ADR-001a, ADR-005, ADR-006, ADR-007
+**Связанные:** [[ADR-001a-sensor-transport-stdin]],[[ADR-005-container-isolate]], [[ADR-006-life-as-blocking-loop]], [[ADR-007-world-as-container]]
 
 ## Контекст
 Агенты читают только из stdin. Нам нужна операционная маршрутизация потока stdout `world` → stdin *одного* выбранного агента (black *или* white) и способ исключить их одновременный запуск.

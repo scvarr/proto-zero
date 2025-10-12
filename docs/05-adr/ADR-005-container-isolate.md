@@ -27,4 +27,8 @@
 Многостейдж внутри одного Dockerfile — удобно, но размывает границу этики black.
 
 ## Связанные ADR
-ADR-000…004 (инварианты Stage-0).
+[[ADR-000-null-core]]
+[[ADR-002-drives-are-latent]]
+[[ADR-003-no-output-before-motor]]
+[[ADR-004-no-time-no-memory]] 
+(инварианты Stage-0).

@@ -1,0 +1,23 @@
+{
+  "annotations":{"list":[]},
+  "editable":true,
+  "gnetId":null,
+  "graphTooltip":0,
+  "id":1,
+  "panels":[
+    {
+      "type":"timeseries",
+      "title":"Drive 0",
+      "targets":[{"expr":"protozero_drive_0","refId":"A"}],
+      "gridPos":{"h":9,"w":24,"x":0,"y":0}
+    }
+  ],
+  "schemaVersion":39,
+  "style":"dark",
+  "tags":["protozero"],
+  "time":{"from":"now-15m","to":"now"},
+  "timepicker":{},
+  "timezone":"",
+  "title":"Proto-Zero — Drive",
+  "version":1
+}

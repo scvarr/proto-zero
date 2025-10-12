@@ -1,0 +1,7 @@
+global:
+  scrape_interval: 1s
+
+scrape_configs:
+  - job_name: 'protozero_white'
+    static_configs:
+      - targets: ['white:9100']

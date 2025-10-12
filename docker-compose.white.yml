@@ -1,6 +1,8 @@
 volumes:
   pz-io: {}
   pz-lock: {}
+  grafana-storage: {}
+  prometheus-data: {}
 
 services:
   fifo-init:
@@ -21,7 +23,31 @@ services:
 
   white:
     build: { context: ., dockerfile: docker/white.Dockerfile }
+    environment:
+      - WHITE_LOG_JSON=0
     depends_on: [ fifo-init, lock-white, world ]
     volumes: ["pz-io:/io","pz-lock:/lock"]
     # Шим проверяет конфликт (наличие BLACK-лока), затем подаёт поток в stdin white
     entrypoint: ["/bin/sh","-lc","test -f /lock/BLACK && echo 'Conflict: BLACK stack running' >&2 && exit 42 || true; cat /io/stream | white"]
+
+  prometheus:
+    image: prom/prometheus:latest
+    command: --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - prometheus-data:/prometheus
+      - ./ops/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./ops/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./ops/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - grafana-storage:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on: [ prometheus ]

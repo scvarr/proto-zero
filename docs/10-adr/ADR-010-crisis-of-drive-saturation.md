@@ -2,7 +2,7 @@
 
 **Статус:** accepted (crisis)  
 **Дата:** 2025-10-12  
-**Связанные:** ADR-006, ADR-007, ADR-008, ADR-009
+**Связанные:** [[ADR-006-life-as-blocking-loop]], [[ADR-007-world-as-container]], [[ADR-008-crisis-of-observation-saturation]], [[ADR-009-drive-0-introduction]]
 
 ---
 
@@ -42,4 +42,4 @@
 ## Решение по документу
 
 - Признать кризис и зафиксировать необходимость регуляции в **Stage-2**.
-- Реализацию выбрать и зафиксировать в **ADR-011 (Regulator for `drive.0`)**.
+- Реализацию выбрать и зафиксировать в **[[ADR-011-drive-regulation]] 

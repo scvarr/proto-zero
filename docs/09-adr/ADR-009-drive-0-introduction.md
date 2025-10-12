@@ -2,7 +2,7 @@
 
 **Статус:** accepted  
 **Дата:** 2025-10-12  
-**Связанные:** ADR-006, ADR-007, ADR-008
+**Связанные:** [[ADR-006-life-as-blocking-loop]], [[ADR-007-world-as-container]], [[ADR-008-crisis-of-observation-saturation]]
 
 ---
 

@@ -35,6 +35,6 @@ Stage-0 реализован как единичное «ощупывание» 
 - Завершение = docker stop или закрытие stdin (EOF).
 
 ## Связанные ADR
-- ADR-001a (транспорт сенсора = stdin).
-- ADR-005 (изоляция контейнеров black/white).
-- (план) ADR-007 «мир как отдельный контейнер».
+- [[ADR-001a-sensor-transport-stdin]] (транспорт сенсора = stdin).
+- [[ADR-005-container-isolate]] (изоляция контейнеров black/white).
+- [[ADR-007-world-as-container]] «мир как отдельный контейнер».
