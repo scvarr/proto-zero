@@ -13,12 +13,24 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "21-adr/ADR-021-configurable-world.md.md",
+                "file": "recovery/stage-1.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "ADR-021-configurable-world.md"
+              "title": "stage-1"
+            }
+          },
+          {
+            "id": "1d608c87cf055337",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.11.7"
+              },
+              "icon": "lucide-book-up",
+              "title": "примечания к выпуску 1.11.7"
             }
           }
         ]
@@ -171,7 +183,13 @@
   },
   "active": "6082099e27f6310c",
   "lastOpenFiles": [
+    "01-glossary.md",
     "roadmap/ADR-ROADMAP.md",
+    "00-core/ADR-000-null-core.md",
+    "Без названия 2.base",
+    "Без названия 1.base",
+    "Без названия.base",
+    "21-adr/ADR-021-configurable-world.md.md",
     "15-adr/ADR-015-crisis-of-silence.md",
     "future/ADR-019-internal-sensor-self-observation.md",
     "future/ADR-018-sensorimotor-calibration.md",
@@ -181,13 +199,11 @@
     "20-adr/ADR-020-semantic-framing.md",
     "14-adr/ADR-014-proto-differential-drive.md",
     "ADR-015.md",
-    "21-adr/ADR-021-configurable-world.md.md",
     "21-adr",
     "20-adr",
     "13-adr/ADR-013-crisis-of-saturation-blindness.md",
     "14-adr",
     "02-invariants.md",
-    "01-glossary.md",
     "recovery/stage-1.md",
     "08-adr/ADR-008-crisis-of-observation-saturation.md",
     "07-adr/ADR-007-world-as-container.md",

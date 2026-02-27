@@ -1,8 +1,8 @@
-# ADR-017: Bidirectional Coupling
+﻿# ADR-017: Bidirectional Coupling
 
 **Статус:** draft  
 **Дата:** 2025-10-13  
-**Связанные:** [[ADR-016-event-based-decay]]  
+**Связанные:** [ADR-016-event-based-decay](./ADR-016-event-based-decay.md)  
 
 ---
 
@@ -24,3 +24,5 @@
 
 ## Результат
 Появление первых признаков **ошибки и калибровки**.
+
+

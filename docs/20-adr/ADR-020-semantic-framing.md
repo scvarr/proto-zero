@@ -1,8 +1,8 @@
-# ADR-020: Semantic Framing (Burst Boundaries)
+﻿# ADR-020: Semantic Framing (Burst Boundaries)
 
 **Статус:** accepted  
 **Дата:** 2025-10-13  
-**Связанные:** [[ADR-011-drive-regulation|ADR-011]], [[ADR-012-crisis-candidates-and-selected|ARD-012]], [[ADR-013-crisis-of-saturation-blindness|ADR-013]], [[ADR-014-proto-differential-drive|ADR-014]]  
+**Связанные:** [ADR-011](../11-adr/ADR-011-drive-regulation.md), [ADR-012](../12-adr/ADR-012-crisis-candidates-and-selected.md), [ADR-013](../13-adr/ADR-013-crisis-of-saturation-blindness.md), [ADR-014](../14-adr/ADR-014-proto-differential-drive.md)  
 
 ---
 
@@ -109,4 +109,6 @@ Prometheus-метрики:
 
 1. **Инвариантность к транспорту** — одинаковый поток, разбитый по-разному, даёт те же состояния.    
 2. **Появление ритма** — последовательность возбуждений и сбросов.    
-3. **Основы для Crisis of Silence ([[ADR-015-crisis-of-silence|ADR-015]])** — когда маркеры перестанут приходить, агент потеряет ощущение границ.
+3. **Основы для Crisis of Silence ([ADR-015](../15-adr/ADR-015-crisis-of-silence.md))** — когда маркеры перестанут приходить, агент потеряет ощущение границ.
+
+

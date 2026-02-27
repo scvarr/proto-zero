@@ -1,8 +1,8 @@
-# ADR-016: Event-based Decay
+﻿# ADR-016: Event-based Decay
 
 **Статус:** draft  
 **Дата:** 2025-10-13  
-**Связанные:** [[ADR-015-crisis-of-silence]]  
+**Связанные:** [ADR-015-crisis-of-silence](../15-adr/ADR-015-crisis-of-silence.md)  
 
 ---
 
@@ -26,3 +26,5 @@ $$
 
 ## Результат
 Появление внутреннего ритма без введения clock — минимальный прообраз «времени агента».
+
+

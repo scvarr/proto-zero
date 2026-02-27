@@ -1,4 +1,4 @@
-# ADR Roadmap — Proto-Zero → Proto-One
+﻿# ADR Roadmap — Proto-Zero → Proto-One
 
 Каждый ADR — не просто техническое решение, а фиксация осознанного перехода системы через кризис.
 Развитие агента происходит через эволюционные ступени:
@@ -16,8 +16,6 @@
 - не вводить параметры, если их нельзя вывести;
 - сохранять симметрию black/white;
 - и указывать, какие инварианты временно нарушаются ради развития.
-****
-
 ## Этап I — Эмергенция (всё, что уже есть)
 
 | ADR | Суть                                                        | Статус |
@@ -41,14 +39,15 @@
 
 | ADR                                               | Кризис / Решение                         | Цель                                                           | Статус |
 | ------------------------------------------------- | ---------------------------------------- | -------------------------------------------------------------- | ------ |
-| [[ADR-014-proto-differential-drive\| 014]]        | **Proto-Differential Drive**             | Ввести ощущение изменения, Δ-канал (минимальная память 1 шага) | ✅      |
-| [[ADR-015-crisis-of-silence\| 015]]               | **Crisis of Silence**                    | Отсутствие событий ≠ насыщение → зачаток времени               | ✅      |
-| [[ADR-016-event-based-decay\|016]]                | **Event-based Decay**                    | «Утихание» при бездействии, внутренний ритм без часов          |        |
-| [[ADR-017-bidirectional-coupling\|017]]           | **Bidirectional Coupling**               | Ввести моторный выход, начало обратной связи                   |        |
-| [[ADR-018-sensorimotor-calibration\|018]]         | **Sensorimotor Calibration**             | Drive начинает зависеть от ответа мира                         |        |
-| [[ADR-019-internal-sensor-self-observation\|019]] | **Internal Sensor / Self-Observation**   | Агент видит свои собственные состояния как входные данные      |        |
-| [[ADR-020-semantic-framing\|020]]                 | **Semantic Framing (Burst Boundaries)**  | семантическому восприятию структуры потока                     | ✅      |
-| 021                                               |                                          |                                                                |        |
+| [014](../14-adr/ADR-014-proto-differential-drive.md)        | **Proto-Differential Drive**             | Ввести ощущение изменения, Δ-канал (минимальная память 1 шага) | ✅      |
+| [015](../15-adr/ADR-015-crisis-of-silence.md)               | **Crisis of Silence**                    | Отсутствие событий ≠ насыщение → зачаток времени               | ✅      |
+| [016](../future/ADR-016-event-based-decay.md)                | **Event-based Decay**                    | «Утихание» при бездействии, внутренний ритм без часов          |        |
+| [017](../future/ADR-017-bidirectional-coupling.md)           | **Bidirectional Coupling**               | Ввести моторный выход, начало обратной связи                   |        |
+| [018](../future/ADR-018-sensorimotor-calibration.md)         | **Sensorimotor Calibration**             | Drive начинает зависеть от ответа мира                         |        |
+| [019](../future/ADR-019-internal-sensor-self-observation.md) | **Internal Sensor / Self-Observation**   | Агент видит свои собственные состояния как входные данные      |        |
+| [020](../20-adr/ADR-020-semantic-framing.md)                 | **Semantic Framing (Burst Boundaries)**  | семантическому восприятию структуры потока                     | ✅      |
+| [021](../21-adr/ADR-021-configurable-world.md) | **Configurable World** | Управляемая среда эксперимента через API /config | ✅      |
 | 022                                               | **Crisis of Self-Interference**          | Возникает необходимость различать «я» и «не я»                 |        |
 | 023                                               | **Proto-Hormonal System**                | Медленные внутренние модуляторы (energy, curiosity, bond)      |        |
 | 024                                               | **Social Resonance / Partnership Drive** | Drive ориентируется на состояние другого агента (человека)     |        |
+

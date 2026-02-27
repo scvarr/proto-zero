@@ -1,8 +1,8 @@
-# ADR-007a: Маршрутизация world→agent через FIFO + взаимная блокировка стеками
+﻿# ADR-007a: Маршрутизация world→agent через FIFO + взаимная блокировка стеками
 
 **Статус:** accepted  
 **Дата:** 2025-10-12  
-**Связанные:** [[ADR-001a-sensor-transport-stdin]],[[ADR-005-container-isolate]], [[ADR-006-life-as-blocking-loop]], [[ADR-007-world-as-container]]
+**Связанные:** [ADR-001a-sensor-transport-stdin](../01-adr/ADR-001a-sensor-transport-stdin.md),[ADR-005-container-isolate](../05-adr/ADR-005-container-isolate.md), [ADR-006-life-as-blocking-loop](../06-adr/ADR-006-life-as-blocking-loop.md), [ADR-007-world-as-container](./ADR-007-world-as-container.md)
 
 ## Контекст
 Агенты читают только из stdin. Нам нужна операционная маршрутизация потока stdout `world` → stdin *одного* выбранного агента (black *или* white) и способ исключить их одновременный запуск.
@@ -34,3 +34,6 @@
 ## Инварианты
 - Агенты не создают файлов/сокетов, не пишут наружу (кроме метрик у white).
 - Канал односторонний: `world.stdout → agent.stdin`.
+
+
+

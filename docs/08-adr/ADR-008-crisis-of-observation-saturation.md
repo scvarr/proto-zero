@@ -1,9 +1,9 @@
-# ADR-008: Crisis of Observation Saturation
+﻿# ADR-008: Crisis of Observation Saturation
 **(Кризис перенасыщения наблюдения)**
 
 **Статус**: accepted \
 **Дата**: 2025-10-12 \
-**Связанные:** [[ADR-001a-sensor-transport-stdin]], [[ADR-006-life-as-blocking-loop]], [[ADR-007-world-as-container]], [[ADR-007a-routing-and-mutex-via-fifo-and-lock]]
+**Связанные:** [ADR-001a-sensor-transport-stdin](../01-adr/ADR-001a-sensor-transport-stdin.md), [ADR-006-life-as-blocking-loop](../06-adr/ADR-006-life-as-blocking-loop.md), [ADR-007-world-as-container](../07-adr/ADR-007-world-as-container.md), [ADR-007a-routing-and-mutex-via-fifo-and-lock](../07-adr/ADR-007a-routing-and-mutex-via-fifo-and-lock.md)
 
 ## Контекст
 
@@ -78,8 +78,8 @@ white не может интерпретировать динамику, пот�
 
 ## Связанные будущие ADR
 
-- [[ADR-009-drive-0-introduction]]: материализация первого драйва (drive.0) и логика накопления.
-- [[ADR-010-crisis-of-drive-saturation]]: кризис насыщения драйва → появление регуляции (feedback).
+- [ADR-009-drive-0-introduction](../09-adr/ADR-009-drive-0-introduction.md): материализация первого драйва (drive.0) и логика накопления.
+- [ADR-010-crisis-of-drive-saturation](../10-adr/ADR-010-crisis-of-drive-saturation.md): кризис насыщения драйва → появление регуляции (feedback).
 
 ---
 
@@ -92,3 +92,5 @@ white не может интерпретировать динамику, пот�
 | Симптом          | White логирует шум, не различая состояния |
 | Решение          | Ввести первый драйв (внутреннюю величину) |
 | Следствие        | Появление первого «вектора жизни» агента  |
+
+

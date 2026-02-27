@@ -1,8 +1,8 @@
-# ADR-010: Crisis of Drive Saturation (перенасыщение драйва)
+﻿# ADR-010: Crisis of Drive Saturation (перенасыщение драйва)
 
 **Статус:** accepted (crisis)  
 **Дата:** 2025-10-12  
-**Связанные:** [[ADR-006-life-as-blocking-loop]], [[ADR-007-world-as-container]], [[ADR-008-crisis-of-observation-saturation]], [[ADR-009-drive-0-introduction]]
+**Связанные:** [ADR-006-life-as-blocking-loop](../06-adr/ADR-006-life-as-blocking-loop.md), [ADR-007-world-as-container](../07-adr/ADR-007-world-as-container.md), [ADR-008-crisis-of-observation-saturation](../08-adr/ADR-008-crisis-of-observation-saturation.md), [ADR-009-drive-0-introduction](../09-adr/ADR-009-drive-0-introduction.md)
 
 ---
 
@@ -42,4 +42,4 @@
 ## Решение по документу
 
 - Признать кризис и зафиксировать необходимость регуляции в **Stage-2**.
-- Реализацию выбрать и зафиксировать в **[[ADR-011-drive-regulation]] 
+- Реализацию выбрать и зафиксировать в [ADR-011-drive-regulation](../11-adr/ADR-011-drive-regulation.md).

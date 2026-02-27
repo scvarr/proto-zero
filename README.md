@@ -1,5 +1,40 @@
-# Proto-Zero — Stage-0
-Цель: этичный агент, развивающийся атомарными шагами через кризисы.
-Текущий уровень: одноразовая оценка `HasAny` из stdin; black — немой, white — публикует метрику.
-Сборка: `docker build -t protozero:stage0 .`
-Примеры запуска см. в разделе Docker команд.
+﻿# Proto-Zero — Stage-1 (Emergent Drive)
+Proto-Zero — исследовательский фреймворк для развития этичного агента через кризис-ориентированную архитектуру (ADR-driven).
+
+## Текущий статус реализации
+- Текущая стадия: `Stage-1 (Emergent Drive)`.
+- `black`: немой агент, без логов/вывода, событийно обновляет drive.
+- `white`: анатомический двойник black + экспорт метрик Prometheus.
+- `world`: настраиваемый источник событий с HTTP API (`GET/POST /config`).
+
+## Сборка и проверки
+- `cargo build`
+- `cargo test`
+
+## Docker-стеки
+- Black: `docker-compose -f docker-compose.black.yml up --build`
+- White (с мониторингом): `docker-compose -f docker-compose.white.yml up --build`
+
+Endpoints white-стека:
+- Grafana: `http://localhost:3000` (`admin/admin`)
+- Prometheus: `http://localhost:9090`
+- World API: `http://localhost:8080/config`
+
+Пример конфигурации мира:
+```bash
+curl -X POST http://localhost:8080/config ^
+  -H "Content-Type: application/json" ^
+  -d "{\"mode\":\"bursty\",\"bytes_per_sec\":400000,\"chunk_size\":4096,\"frame_bytes\":65536,\"jitter_ms\":20,\"file_path\":\"\",\"seed\":42}"
+```
+
+## Основные метрики white
+- `protozero_drive_0`
+- `protozero_drive_delta`
+- `protozero_events_total`
+- `protozero_drive_0_frame`
+- `protozero_drive_delta_frame`
+- `protozero_frames_total`
+
+## Документация
+- Индекс docs: `docs/README.md`
+- Roadmap: `docs/roadmap/ADR-ROADMAP.md`

@@ -1,4 +1,4 @@
-# ADR-005: Изоляция контейнеров black/white
+﻿# ADR-005: Изоляция контейнеров black/white
 Статус: accepted
 Дата: 2025-10-11
 
@@ -27,8 +27,10 @@
 Многостейдж внутри одного Dockerfile — удобно, но размывает границу этики black.
 
 ## Связанные ADR
-[[ADR-000-null-core]]
-[[ADR-002-drives-are-latent]]
-[[ADR-003-no-output-before-motor]]
-[[ADR-004-no-time-no-memory]] 
+[ADR-000-null-core](../00-core/ADR-000-null-core.md)
+[ADR-002-drives-are-latent](../02-adr/ADR-002-drives-are-latent.md)
+[ADR-003-no-output-before-motor](../03-adr/ADR-003-no-output-before-motor.md)
+[ADR-004-no-time-no-memory](../04-adr/ADR-004-no-time-no-memory.md) 
 (инварианты Stage-0).
+
+

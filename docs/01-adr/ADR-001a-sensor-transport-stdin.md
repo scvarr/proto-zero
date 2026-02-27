@@ -1,8 +1,8 @@
-# ADR-001a: Транспорт сенсора на Stage-0 — stdin
+﻿# ADR-001a: Транспорт сенсора на Stage-0 — stdin
 
 **Статус:** accepted  
 **Дата:** 2025-10-11  
-**Связанные:** [[ADR-000-null-core]], [[ADR-001-minimal-input-ephemeral]],[[ADR-004-no-time-no-memory]], [[ADR-005-container-isolate]], [[ADR-006-life-as-blocking-loop]]
+**Связанные:** [ADR-000-null-core](../00-core/ADR-000-null-core.md), [ADR-001-minimal-input-ephemeral](./ADR-001-minimal-input-ephemeral.md),[ADR-004-no-time-no-memory](../04-adr/ADR-004-no-time-no-memory.md), [ADR-005-container-isolate](../05-adr/ADR-005-container-isolate.md), [ADR-006-life-as-blocking-loop](../06-adr/ADR-006-life-as-blocking-loop.md)
 
 ## Контекст
 На Stage-0 агенту доступен только факт наличия данных. Нам нужен минимальный, этичный и универсальный способ доставки этого факта в процесс агента без времени, памяти и побочных каналов.
@@ -29,3 +29,6 @@
 
 ## Инварианты
 - Нет времени, нет памяти, у `black` нет вывода; `white` логирует только метрики наблюдения.
+
+
+

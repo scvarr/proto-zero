@@ -1,8 +1,8 @@
-# ADR-011: Drive Regulation Mechanism
+﻿# ADR-011: Drive Regulation Mechanism
 
 **Статус:** accepted  
 **Дата:** 2025-10-12  
-**Связанные:** [[ADR-009-drive-0-introduction]], [[ADR-010-crisis-of-drive-saturation]]
+**Связанные:** [ADR-009-drive-0-introduction](../09-adr/ADR-009-drive-0-introduction.md), [ADR-010-crisis-of-drive-saturation](../10-adr/ADR-010-crisis-of-drive-saturation.md)
 
 ---
 
@@ -103,3 +103,5 @@ $$
       let next = 1.0 / (2.0 - d);
       next.clamp(0.0, 1.0 - f64::EPSILON)
   }
+
+

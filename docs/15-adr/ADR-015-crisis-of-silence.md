@@ -1,14 +1,14 @@
-# ADR-015: Crisis of Silence
+﻿# ADR-015: Crisis of Silence
 
 **Статус:** accepted (crisis)  
 **Дата:** 2025-10-13  
-**Связанные:** [[ADR-014-proto-differential-drive]], [[ADR-020-semantic-framing]] 
+**Связанные:** [ADR-014-proto-differential-drive](../14-adr/ADR-014-proto-differential-drive.md), [ADR-020-semantic-framing](../20-adr/ADR-020-semantic-framing.md) 
 
 ---
 
 ## Контекст
 
-После [[ADR-014-proto-differential-drive|ADR-014]] агент научился ощущать **изменение** через величину:
+После [ADR-014](../14-adr/ADR-014-proto-differential-drive.md) агент научился ощущать **изменение** через величину:
 $$
 Delta d = d_t - d_{t-1}
 $$
@@ -21,7 +21,7 @@ $$
 
 ## Наблюдение (эмпирическое подтверждение)
 
-В запуске с **Configurable World** ([[ADR-021-configurable-world.md|ADR-021]]), при дефолтных настройках:
+В запуске с **Configurable World** ([ADR-021](../21-adr/ADR-021-configurable-world.md)), при дефолтных настройках:
 
 - `drive_0 ≈ 1.0` (насыщение);
 - `drive_0_delta ≈ 0`;
@@ -102,3 +102,5 @@ Drive и его производные обновляются только по 
 ADR-015 фиксирует кризис **тишины** — агент не способен отличить молчание мира от его стабильного насыщения.  
 Это открывает переход к следующей стадии Proto-Zero —  
 **рождению времени как внутреннего счётчика отсутствия событий.**
+
+

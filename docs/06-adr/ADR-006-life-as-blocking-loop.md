@@ -1,4 +1,4 @@
-# ADR-006: Кризис «нет жизни» → бесконечная готовность (blocking loop)
+﻿# ADR-006: Кризис «нет жизни» → бесконечная готовность (blocking loop)
 
 **Статус**: accepted \
 **Дата**: 2025-10-11
@@ -35,6 +35,7 @@ Stage-0 реализован как единичное «ощупывание» 
 - Завершение = docker stop или закрытие stdin (EOF).
 
 ## Связанные ADR
-- [[ADR-001a-sensor-transport-stdin]] (транспорт сенсора = stdin).
-- [[ADR-005-container-isolate]] (изоляция контейнеров black/white).
-- [[ADR-007-world-as-container]] «мир как отдельный контейнер».
+- [ADR-001a-sensor-transport-stdin](../01-adr/ADR-001a-sensor-transport-stdin.md) (транспорт сенсора = stdin).
+- [ADR-005-container-isolate](../05-adr/ADR-005-container-isolate.md) (изоляция контейнеров black/white).
+- [ADR-007-world-as-container](../07-adr/ADR-007-world-as-container.md) «мир как отдельный контейнер».
+

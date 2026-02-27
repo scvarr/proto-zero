@@ -1,8 +1,8 @@
-# ADR-007: Мир — отдельный контейнер-генератор входа
+﻿# ADR-007: Мир — отдельный контейнер-генератор входа
 
 **Статус:** accepted  
 **Дата:** 2025-10-11  
-**Связанные:** [[ADR-001a-sensor-transport-stdin]], [[ADR-003-no-output-before-motor]], [[ADR-005-container-isolate]], [[ADR-006-life-as-blocking-loop]]
+**Связанные:** [ADR-001a-sensor-transport-stdin](../01-adr/ADR-001a-sensor-transport-stdin.md), [ADR-003-no-output-before-motor](../03-adr/ADR-003-no-output-before-motor.md), [ADR-005-container-isolate](../05-adr/ADR-005-container-isolate.md), [ADR-006-life-as-blocking-loop](../06-adr/ADR-006-life-as-blocking-loop.md)
 
 ## Контекст
 Сейчас `black` и `white` ожидают данные на stdin. Чтобы наблюдать «жизнь» без нарушения инвариантов, нужен источник данных («Мир»), который не интерпретирует содержимое и не встраивается в процессы агентов.
@@ -41,3 +41,5 @@
 ## Пример минимальной реализации (набросок)
 - `world` пишет бесконечный шум (например, чтение из `/dev/urandom` или периодическая печать одиночного байта) в stdout.
 - Подключение: `docker compose` связывает stdout `world` с stdin целевого контейнера **в момент запуска** (детали маршрутизации оформим отдельным технико-операционным документом, без изменения кода агентов).
+
+

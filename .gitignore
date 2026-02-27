@@ -7,3 +7,4 @@ target/
 **/.vscode/
 /docker/dist/
 /docker/cache/
+/docs/.obsidian

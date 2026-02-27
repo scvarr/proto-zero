@@ -1,8 +1,8 @@
-# ADR-009: Введение первого драйва (drive.0)
+﻿# ADR-009: Введение первого драйва (drive.0)
 
 **Статус:** accepted  
 **Дата:** 2025-10-12  
-**Связанные:** [[ADR-006-life-as-blocking-loop]], [[ADR-007-world-as-container]], [[ADR-008-crisis-of-observation-saturation]]
+**Связанные:** [ADR-006-life-as-blocking-loop](../06-adr/ADR-006-life-as-blocking-loop.md), [ADR-007-world-as-container](../07-adr/ADR-007-world-as-container.md), [ADR-008-crisis-of-observation-saturation](../08-adr/ADR-008-crisis-of-observation-saturation.md)
 
 ---
 
@@ -33,3 +33,5 @@
     "sensor": { "has_any": true },
     "drive": { "0": <value> }
   }
+
+

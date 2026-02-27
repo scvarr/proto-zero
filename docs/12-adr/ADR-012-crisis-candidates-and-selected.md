@@ -1,14 +1,14 @@
-# ADR-012: Кандидаты на кризис и выбранный кризис для Stage-2
+﻿# ADR-012: Кандидаты на кризис и выбранный кризис для Stage-2
 
 **Статус:** accepted (crisis)  
 **Дата:** 2025-10-12  
-**Связанные:** [[ADR-009-drive-0-introduction]], [[ADR-010-crisis-of-drive-saturation]], [[ADR-011-drive-regulation]]
+**Связанные:** [ADR-009-drive-0-introduction](../09-adr/ADR-009-drive-0-introduction.md), [ADR-010-crisis-of-drive-saturation](../10-adr/ADR-010-crisis-of-drive-saturation.md), [ADR-011-drive-regulation](../11-adr/ADR-011-drive-regulation.md)
 
 ---
 
 ## Контекст
 
-После [[ADR-011-drive-regulation]] `drive.0 ∈ [0,1)` с событийным обновлением:
+После [ADR-011-drive-regulation](../11-adr/ADR-011-drive-regulation.md) `drive.0 ∈ [0,1)` с событийным обновлением:
 $$
 d \leftarrow \frac{1}{2 - d}
 $$
@@ -105,4 +105,6 @@ BLACK остаётся немым, WHITE логирует метрики. Мир
 ## Итог
 
 ADR-012 фиксирует кризис **неопределённости единицы события** (зависимость от транспорта).  
-Решение будет предложено в [[ADR-013-crisis-of-saturation-blindness]] и должно обеспечить **семантическое** определение события при сохранении всех инвариантов Proto-Zero.
+Решение будет предложено в [ADR-013-crisis-of-saturation-blindness](../13-adr/ADR-013-crisis-of-saturation-blindness.md) и должно обеспечить **семантическое** определение события при сохранении всех инвариантов Proto-Zero.
+
+
