@@ -41,7 +41,7 @@
 | ------------------------------------------------- | ---------------------------------------- | -------------------------------------------------------------- | ------ |
 | [014](../14-adr/ADR-014-proto-differential-drive.md)        | **Proto-Differential Drive**             | Ввести ощущение изменения, Δ-канал (минимальная память 1 шага) | ✅      |
 | [015](../15-adr/ADR-015-crisis-of-silence.md)               | **Crisis of Silence**                    | Отсутствие событий ≠ насыщение → зачаток времени               | ✅      |
-| [016](../future/ADR-016-event-based-decay.md)                | **Event-based Decay**                    | «Утихание» при бездействии, внутренний ритм без часов          |        |
+| [016](../16-adr/ADR-016-non-blocking-sensor.md)              | **Non-blocking Sensor**                  | Рождение времени: сенсор различает стимул, тишину и смерть     | ✅      |
 | [017](../future/ADR-017-bidirectional-coupling.md)           | **Bidirectional Coupling**               | Ввести моторный выход, начало обратной связи                   |        |
 | [018](../future/ADR-018-sensorimotor-calibration.md)         | **Sensorimotor Calibration**             | Drive начинает зависеть от ответа мира                         |        |
 | [019](../future/ADR-019-internal-sensor-self-observation.md) | **Internal Sensor / Self-Observation**   | Агент видит свои собственные состояния как входные данные      |        |

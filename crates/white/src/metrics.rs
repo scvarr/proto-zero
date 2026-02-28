@@ -1,4 +1,4 @@
-use axum::{routing::get, serve, Router};
+use axum::{Router, routing::get, serve};
 use once_cell::sync::Lazy;
 use prometheus::{Encoder, Gauge, IntCounter, Opts, Registry, TextEncoder};
 use std::net::SocketAddr;
@@ -13,29 +13,46 @@ pub static DRIVE0: Lazy<Gauge> = Lazy::new(|| {
 });
 
 pub static DRIVE0_DELTA: Lazy<Gauge> = Lazy::new(|| {
-    let g = Gauge::with_opts(Opts::new("protozero_drive_delta", "Delta of Drive-0 per event")).unwrap();
+    let g = Gauge::with_opts(Opts::new(
+        "protozero_drive_delta",
+        "Delta of Drive-0 per event",
+    ))
+    .unwrap();
     REGISTRY.register(Box::new(g.clone())).unwrap();
     g
 });
 
 pub static EVENTS_TOTAL: Lazy<IntCounter> = Lazy::new(|| {
-    let c = IntCounter::with_opts(Opts::new("protozero_events_total", "Total input events")).unwrap();
+    let c =
+        IntCounter::with_opts(Opts::new("protozero_events_total", "Total input events")).unwrap();
     REGISTRY.register(Box::new(c.clone())).unwrap();
     c
 });
 
 pub static DRIVE0_FRAME: Lazy<Gauge> = Lazy::new(|| {
-    let g = Gauge::with_opts(Opts::new("protozero_drive_0_frame", "Drive-0 per frame in [0,1)")).unwrap();
+    let g = Gauge::with_opts(Opts::new(
+        "protozero_drive_0_frame",
+        "Drive-0 per frame in [0,1)",
+    ))
+    .unwrap();
     REGISTRY.register(Box::new(g.clone())).unwrap();
     g
 });
 pub static DRIVE0_FRAME_DELTA: Lazy<Gauge> = Lazy::new(|| {
-    let g = Gauge::with_opts(Opts::new("protozero_drive_delta_frame", "Delta of frame drive per event")).unwrap();
+    let g = Gauge::with_opts(Opts::new(
+        "protozero_drive_delta_frame",
+        "Delta of frame drive per event",
+    ))
+    .unwrap();
     REGISTRY.register(Box::new(g.clone())).unwrap();
     g
 });
 pub static FRAMES_TOTAL: Lazy<IntCounter> = Lazy::new(|| {
-    let c = IntCounter::with_opts(Opts::new("protozero_frames_total", "Number of frame boundaries")).unwrap();
+    let c = IntCounter::with_opts(Opts::new(
+        "protozero_frames_total",
+        "Number of frame boundaries",
+    ))
+    .unwrap();
     REGISTRY.register(Box::new(c.clone())).unwrap();
     c
 });

@@ -1,36 +1,15 @@
 //! WHITE: анатомический двойник BLACK, имеет право логирования метрик.
-//! Stage-3 (ADR-014): публикуем d и Δ в Prometheus (+ опционально JSON).
+//! ADR-016: non-blocking сенсор — агент различает стимул и тишину.
 
 mod metrics;
 
+use metrics::{DRIVE0, EVENTS_TOTAL, start_metrics_server};
 use std::net::SocketAddr;
 use std::thread;
-use metrics::{start_metrics_server, DRIVE0, EVENTS_TOTAL};
 
-use serde::Serialize;
-use protozero_core::{run_stdin_forever, DriveDiff};
-use protozero_core::drive::{drive_update, FrameCounter};
 use crate::metrics::{DRIVE0_DELTA, DRIVE0_FRAME, DRIVE0_FRAME_DELTA, FRAMES_TOTAL};
-
-#[derive(Serialize)]
-struct Metrics<'a> {
-    agent: &'a str,
-    stage: &'a str,
-    sensor: SensorMetrics,
-    drive: DriveMetrics,
-}
-
-#[derive(Serialize)]
-struct DriveMetrics {
-    #[serde(rename = "0")]
-    d0: f64,
-    delta: f64,
-}
-
-#[derive(Serialize)]
-struct SensorMetrics {
-    has_any: bool,
-}
+use protozero_core::drive::{FrameCounter, drive_update};
+use protozero_core::{DriveDiff, SensorEvent, run_sensor_loop};
 
 fn main() {
     // Запускаем HTTP-эндпоинт в отдельном треде (внешнее наблюдение; "время" внутрь не заходит).
@@ -49,29 +28,38 @@ fn main() {
     let mut frame = FrameCounter::new();
     let mut d_frame_prev: f64 = 0.0;
 
-    let _ = run_stdin_forever(|chunk: &[u8]| {
-        for &b in chunk {
-            if b == b'\n' {
-                frame.on_boundary();
-                d_frame_prev = 0.0;
-                continue;
+    let _ = run_sensor_loop(|event: SensorEvent| {
+        match event {
+            SensorEvent::Data(chunk) => {
+                for &b in chunk {
+                    if b == b'\n' {
+                        frame.on_boundary();
+                        d_frame_prev = 0.0;
+                        FRAMES_TOTAL.inc();
+                        continue;
+                    }
+
+                    // глобальный
+                    d_global = drive_update(d_global);
+                    let dg = d_global_diff.step(d_global);
+                    DRIVE0.set(d_global);
+                    DRIVE0_DELTA.set(dg);
+
+                    // покадровый
+                    let d_frame = frame.on_event();
+                    let df_delta = d_frame - d_frame_prev;
+                    d_frame_prev = d_frame;
+
+                    DRIVE0_FRAME.set(d_frame);
+                    DRIVE0_FRAME_DELTA.set(df_delta);
+
+                    EVENTS_TOTAL.inc();
+                }
             }
-
-            // глобальный
-            d_global = drive_update(d_global);
-            let dg = d_global_diff.step(d_global);
-            DRIVE0.set(d_global);
-            DRIVE0_DELTA.set(dg);
-
-            // покадровый
-            let d_frame = frame.on_event();
-            let df_delta = d_frame - d_frame_prev;
-            d_frame_prev = d_frame;
-
-            DRIVE0_FRAME.set(d_frame);
-            DRIVE0_FRAME_DELTA.set(df_delta);
-
-            EVENTS_TOTAL.inc();
+            SensorEvent::Silence => {
+                // Тишина: агент наблюдает отсутствие стимула.
+                // Пока — только фиксируем факт. Decay будет в следующем ADR.
+            }
         }
     });
 }

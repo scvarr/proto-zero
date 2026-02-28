@@ -1,7 +1,7 @@
-//! BLACK: немой, без логов/памяти/времени.
-//! Stage-2 (ADR-011): событийная регуляция drive_0 без параметров.
-use protozero_core::{run_stdin_forever, DriveDiff};
-use protozero_core::drive::{drive_update, FrameCounter};
+//! BLACK: немой, без логов/памяти.
+//! ADR-016: non-blocking сенсор, агент «дышит» — различает стимул и тишину.
+use protozero_core::drive::{FrameCounter, drive_update};
+use protozero_core::{DriveDiff, SensorEvent, run_sensor_loop};
 
 fn main() {
     let mut d_global = 0.0;
@@ -10,25 +10,32 @@ fn main() {
     let mut frame = FrameCounter::new();
     let mut d_frame_prev: f64 = 0.0;
 
-    // Блокирующее чтение stdin; на каждый чанк увеличиваем drive_0 на +1.0.
-    let _ = run_stdin_forever(|chunk: &[u8]| {
-        for &b in chunk {
-            if b == b'\n' {
-                frame.on_boundary();
-                d_frame_prev = 0.0;
-                continue;
+    let _ = run_sensor_loop(|event: SensorEvent| {
+        match event {
+            SensorEvent::Data(chunk) => {
+                for &b in chunk {
+                    if b == b'\n' {
+                        frame.on_boundary();
+                        d_frame_prev = 0.0;
+                        continue;
+                    }
+
+                    // глобальная динамика
+                    d_global = drive_update(d_global);
+                    let _dg = d_global_diff.step(d_global);
+
+                    // покадровая динамика
+                    let d_frame = frame.on_event();
+                    let _df_delta = d_frame - d_frame_prev;
+                    d_frame_prev = d_frame;
+
+                    let _ = (&d_global, &_dg, &d_frame, &_df_delta);
+                }
             }
-
-            // глобальная динамика
-            d_global = drive_update(d_global);
-            let _dg = d_global_diff.step(d_global);
-
-            // покадровая динамика
-            let d_frame = frame.on_event();
-            let _df_delta = d_frame - d_frame_prev;
-            d_frame_prev = d_frame;
-
-            let _ = (&d_global, &_dg, &d_frame, &_df_delta);
+            SensorEvent::Silence => {
+                // Тишина: агент наблюдает отсутствие стимула.
+                // Пока — только фиксируем факт. Decay будет в следующем ADR.
+            }
         }
     });
 }

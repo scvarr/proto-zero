@@ -4,12 +4,16 @@
 //!   - stdin  : прокси stdin -> stdout (по умолчанию, удобно для тестов/ручной подачи)
 //!   - urandom: бесконечный шум из /dev/urandom (остановка = SIGTERM/закрытие stdout)
 
-use axum::{routing::get, Json, Router};
+use axum::{Json, Router, routing::get};
 use bytes::BytesMut;
 use parking_lot::RwLock;
-use rand::{rngs::StdRng, RngCore, SeedableRng};
+use rand::{RngCore, SeedableRng, rngs::StdRng};
 use serde::{Deserialize, Serialize};
-use std::{io::{self, Write, BufRead}, sync::Arc, time::Duration};
+use std::{
+    io::{self, BufRead, Write},
+    sync::Arc,
+    time::Duration,
+};
 use tokio::{net::TcpListener, task};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -96,8 +100,12 @@ async fn set_config(
     Json(mut incoming): Json<Config>,
 ) -> Json<Config> {
     // Нормализация
-    if incoming.chunk_size == 0 { incoming.chunk_size = 1024; }
-    if incoming.frame_bytes == 0 { incoming.frame_bytes = 1024; }
+    if incoming.chunk_size == 0 {
+        incoming.chunk_size = 1024;
+    }
+    if incoming.frame_bytes == 0 {
+        incoming.frame_bytes = 1024;
+    }
     // Присваиваем без Result/poison, т.к. parking_lot
     *s.cfg.write() = incoming.clone();
     Json(incoming)
@@ -123,7 +131,9 @@ fn run_generator(shared: Shared) -> anyhow::Result<()> {
                 pacing(&cfg, n)?;
             }
             Mode::Bursty => {
-                let n = cfg.chunk_size.min(cfg.frame_bytes.saturating_sub(bytes_in_frame));
+                let n = cfg
+                    .chunk_size
+                    .min(cfg.frame_bytes.saturating_sub(bytes_in_frame));
                 if n > 0 {
                     write_random(&mut stdout, n, &mut rng)?;
                     bytes_in_frame += n;
@@ -149,7 +159,9 @@ fn run_generator(shared: Shared) -> anyhow::Result<()> {
                             loop {
                                 buf.clear();
                                 let n = reader.read_until(b'\n', &mut buf).unwrap_or(0);
-                                if n == 0 { break; }
+                                if n == 0 {
+                                    break;
+                                }
                                 stdout.write_all(&buf)?;
                                 stdout.flush()?;
                                 pacing(&cfg, n)?;
@@ -177,12 +189,16 @@ fn write_random<W: Write>(mut w: W, n: usize, rng: &mut StdRng) -> io::Result<()
 
 /// Пейсинг по скорости и джиттеру. Если bytes_per_sec == 0 — без задержек.
 fn pacing(cfg: &Config, n_bytes: usize) -> io::Result<()> {
-    if cfg.bytes_per_sec == 0 { return Ok(()); }
+    if cfg.bytes_per_sec == 0 {
+        return Ok(());
+    }
     let base_ms = ((n_bytes as f64) / (cfg.bytes_per_sec as f64) * 1000.0) as u64;
     let jitter = if cfg.jitter_ms > 0 {
         // простой недетерминированный джиттер; при желании можно сделать детерминированным от seed
         rand::random::<u64>() % (cfg.jitter_ms + 1)
-    } else { 0 };
+    } else {
+        0
+    };
     let total = base_ms.saturating_add(jitter);
     if total > 0 {
         std::thread::sleep(Duration::from_millis(total));
