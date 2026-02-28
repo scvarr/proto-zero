@@ -125,6 +125,33 @@
     .event.config_changed .kind { color: var(--ok); }
     .event.relay_status .kind { color: var(--hot); }
     .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .world-form { display: grid; gap: 10px; margin-top: 14px; }
+    .form-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+    .field { display: grid; gap: 6px; }
+    .field label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; }
+    .field input, .field select {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font: inherit;
+    }
+    .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, var(--hot), #ff9a65);
+      color: #fff;
+      font: 700 13px/1 var(--font-body);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .btn[disabled] { opacity: 0.5; cursor: wait; }
+    .status { color: var(--muted); font-size: 13px; min-height: 18px; }
     .chip {
       display: inline-flex;
       align-items: center;
@@ -167,6 +194,7 @@
           <div class="metric"><div class="label">Bytes</div><div class="value" id="bytesTotal">-</div></div>
           <div class="metric"><div class="label">Frames</div><div class="value" id="framesTotal">-</div></div>
           <div class="metric"><div class="label">Silence</div><div class="value" id="silenceState">-</div></div>
+          <div class="metric"><div class="label">Sensor ticks</div><div class="value" id="sensorTicks">-</div></div>
         </div>
       </article>
     </section>
@@ -175,6 +203,21 @@
       <article class="panel">
         <h2>World</h2>
         <div class="chips" id="worldChips"></div>
+        <form class="world-form" id="worldForm">
+          <div class="form-grid">
+            <div class="field"><label for="mode">Mode</label><select id="mode" name="mode"><option value="continuous">continuous</option><option value="bursty">bursty</option><option value="file_replay">file_replay</option></select></div>
+            <div class="field"><label for="bytesPerSec">Bytes/sec</label><input id="bytesPerSec" name="bytes_per_sec" type="number" min="0" /></div>
+            <div class="field"><label for="chunkSize">Chunk size</label><input id="chunkSize" name="chunk_size" type="number" min="0" /></div>
+            <div class="field"><label for="frameBytes">Frame bytes</label><input id="frameBytes" name="frame_bytes" type="number" min="0" /></div>
+            <div class="field"><label for="jitterMs">Jitter ms</label><input id="jitterMs" name="jitter_ms" type="number" min="0" /></div>
+            <div class="field"><label for="seed">Seed</label><input id="seed" name="seed" type="number" min="0" /></div>
+            <div class="field"><label for="filePath">File path</label><input id="filePath" name="file_path" type="text" /></div>
+          </div>
+          <div class="actions">
+            <button class="btn" id="applyWorld" type="submit">Apply world</button>
+            <div class="status" id="worldStatus"></div>
+          </div>
+        </form>
       </article>
       <article class="panel">
         <h2>Timeline</h2>
@@ -184,17 +227,31 @@
   </main>
 
   <script>
+    let worldFormDirty = false;
+    let worldFormSubmitting = false;
+
     const ids = {
       drive0: document.getElementById('drive0'),
       driveDelta: document.getElementById('driveDelta'),
       chunksTotal: document.getElementById('chunksTotal'),
       bytesTotal: document.getElementById('bytesTotal'),
       framesTotal: document.getElementById('framesTotal'),
+      sensorTicks: document.getElementById('sensorTicks'),
       silenceState: document.getElementById('silenceState'),
       worldChips: document.getElementById('worldChips'),
       timeline: document.getElementById('timeline'),
       organism: document.getElementById('organism'),
-      organismNote: document.getElementById('organism-note')
+      organismNote: document.getElementById('organism-note'),
+      worldForm: document.getElementById('worldForm'),
+      applyWorld: document.getElementById('applyWorld'),
+      worldStatus: document.getElementById('worldStatus'),
+      mode: document.getElementById('mode'),
+      bytesPerSec: document.getElementById('bytesPerSec'),
+      chunkSize: document.getElementById('chunkSize'),
+      frameBytes: document.getElementById('frameBytes'),
+      jitterMs: document.getElementById('jitterMs'),
+      seed: document.getElementById('seed'),
+      filePath: document.getElementById('filePath')
     };
 
     function fmt(value, digits = 3) {
@@ -207,6 +264,7 @@
       ids.chunksTotal.textContent = state.relay.chunks_total ?? '-';
       ids.bytesTotal.textContent = state.relay.bytes_total ?? '-';
       ids.framesTotal.textContent = state.metrics.frames_total ?? state.relay.frame_boundaries_total ?? '-';
+      ids.sensorTicks.textContent = state.metrics.sensor_ticks_total ?? '-';
       ids.silenceState.textContent = state.relay.currently_silent
         ? `derived gap ${state.relay.last_gap_ms || 0} ms`
         : 'flowing';
@@ -233,6 +291,22 @@
         chip.textContent = `${label}: ${value}`;
         ids.worldChips.appendChild(chip);
       }
+
+      if (world && !worldFormDirty && !worldFormSubmitting) {
+        ids.mode.value = world.mode;
+        ids.bytesPerSec.value = world.bytes_per_sec;
+        ids.chunkSize.value = world.chunk_size;
+        ids.frameBytes.value = world.frame_bytes;
+        ids.jitterMs.value = world.jitter_ms;
+        ids.seed.value = world.seed;
+        ids.filePath.value = world.file_path;
+      }
+    }
+
+    function markWorldFormDirty() {
+      if (!worldFormSubmitting) {
+        worldFormDirty = true;
+      }
     }
 
     function renderEvents(events) {
@@ -246,6 +320,7 @@
         if (event.frame_boundaries != null) detail.push(`frames ${event.frame_boundaries}`);
         if (event.duration_ms != null) detail.push(`gap ${event.duration_ms}ms`);
         if (event.mode) detail.push(`mode ${event.mode}`);
+        if (event.source) detail.push(`source ${event.source}`);
         if (event.message) detail.push(event.message);
         row.innerHTML = `<div class="kind">${event.kind.replace('_', ' ')}</div><div><div>${ts}</div><div class="meta">${detail.join(' · ')}</div></div>`;
         ids.timeline.appendChild(row);
@@ -273,8 +348,47 @@
       renderState(state);
     }
 
+    async function applyWorldConfig(event) {
+      event.preventDefault();
+      worldFormSubmitting = true;
+      ids.applyWorld.disabled = true;
+      ids.worldStatus.textContent = 'Applying...';
+      const payload = {
+        mode: ids.mode.value,
+        bytes_per_sec: Number(ids.bytesPerSec.value || 0),
+        chunk_size: Number(ids.chunkSize.value || 0),
+        frame_bytes: Number(ids.frameBytes.value || 0),
+        jitter_ms: Number(ids.jitterMs.value || 0),
+        file_path: ids.filePath.value,
+        seed: Number(ids.seed.value || 0)
+      };
+
+      try {
+        const response = await fetch('/api/world/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(text || `HTTP ${response.status}`);
+        }
+        worldFormDirty = false;
+        ids.worldStatus.textContent = 'World updated';
+        await refresh();
+      } catch (error) {
+        ids.worldStatus.textContent = `Update failed: ${error.message}`;
+      } finally {
+        worldFormSubmitting = false;
+        ids.applyWorld.disabled = false;
+      }
+    }
+
     refresh();
     setInterval(refresh, 1200);
+    ids.worldForm.addEventListener('submit', applyWorldConfig);
+    ids.worldForm.addEventListener('input', markWorldFormDirty);
+    ids.worldForm.addEventListener('change', markWorldFormDirty);
 
     const events = new EventSource('/api/events');
     events.addEventListener('observer', () => refresh());

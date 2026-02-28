@@ -1,7 +1,7 @@
 use axum::{
     Json, Router,
     response::{Html, IntoResponse, Sse, sse::Event},
-    routing::get,
+    routing::{get, post},
 };
 use futures_util::StreamExt;
 use parking_lot::RwLock;
@@ -32,6 +32,7 @@ struct ObserverEvent {
     frame_boundaries: Option<usize>,
     duration_ms: Option<u64>,
     mode: Option<String>,
+    source: Option<String>,
     message: Option<String>,
 }
 
@@ -64,6 +65,7 @@ struct MetricsSnapshot {
     drive_0_frame: Option<f64>,
     drive_delta_frame: Option<f64>,
     frames_total: Option<u64>,
+    sensor_ticks_total: Option<u64>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -125,6 +127,8 @@ impl Default for ObserverState {
 struct AppState {
     inner: Arc<RwLock<ObserverState>>,
     tx: broadcast::Sender<ObserverEvent>,
+    client: reqwest::Client,
+    world_config_url: String,
 }
 
 impl AppState {
@@ -154,11 +158,6 @@ impl AppState {
 #[tokio::main]
 async fn main() -> io::Result<()> {
     let (tx, _) = broadcast::channel(512);
-    let state = AppState {
-        inner: Arc::new(RwLock::new(ObserverState::default())),
-        tx,
-    };
-
     let bind_addr: SocketAddr = std::env::var("OBSERVER_ADDR")
         .unwrap_or_else(|_| DEFAULT_BIND_ADDR.into())
         .parse()
@@ -167,18 +166,25 @@ async fn main() -> io::Result<()> {
         .unwrap_or_else(|_| DEFAULT_WORLD_CONFIG_URL.into());
     let metrics_url =
         std::env::var("OBSERVER_METRICS_URL").unwrap_or_else(|_| DEFAULT_METRICS_URL.into());
+    let state = AppState {
+        inner: Arc::new(RwLock::new(ObserverState::default())),
+        tx,
+        client: reqwest::Client::new(),
+        world_config_url: world_config_url.clone(),
+    };
 
     let relay_state = state.clone();
     let relay_handle = tokio::task::spawn_blocking(move || run_relay(relay_state));
 
     tokio::spawn(run_silence_monitor(state.clone()));
-    tokio::spawn(run_world_poll(state.clone(), world_config_url));
+    tokio::spawn(run_world_poll(state.clone()));
     tokio::spawn(run_metrics_poll(state.clone(), metrics_url));
 
     let app = Router::new()
         .route("/", get(index_handler))
         .route("/api/state", get(state_handler))
         .route("/api/events", get(events_handler))
+        .route("/api/world/config", post(world_config_handler))
         .route("/healthz", get(health_handler))
         .with_state(state.clone());
 
@@ -214,6 +220,54 @@ async fn state_handler(
 
 async fn health_handler() -> impl IntoResponse {
     "ok"
+}
+
+async fn world_config_handler(
+    axum::extract::State(state): axum::extract::State<AppState>,
+    Json(incoming): Json<WorldConfig>,
+) -> Result<Json<WorldConfig>, (axum::http::StatusCode, String)> {
+    let response = state
+        .client
+        .post(&state.world_config_url)
+        .json(&incoming)
+        .send()
+        .await
+        .map_err(|err| {
+            (
+                axum::http::StatusCode::BAD_GATEWAY,
+                format!("world config request failed: {err}"),
+            )
+        })?;
+
+    let status = response.status();
+    if !status.is_success() {
+        let body = response
+            .text()
+            .await
+            .unwrap_or_else(|_| "world returned an error".into());
+        return Err((axum::http::StatusCode::BAD_GATEWAY, body));
+    }
+
+    let config = response.json::<WorldConfig>().await.map_err(|err| {
+        (
+            axum::http::StatusCode::BAD_GATEWAY,
+            format!("world config decode failed: {err}"),
+        )
+    })?;
+
+    state.inner.write().world = Some(config.clone());
+    state.push_event(ObserverEvent {
+        kind: EventKind::ConfigChanged,
+        ts_ms: now_ms(),
+        size: None,
+        frame_boundaries: None,
+        duration_ms: None,
+        mode: Some(config.mode.clone()),
+        source: Some("ui_applied".into()),
+        message: Some("world_config_updated".into()),
+    });
+
+    Ok(Json(config))
 }
 
 async fn events_handler(
@@ -253,6 +307,7 @@ fn run_relay(state: AppState) -> io::Result<()> {
                 frame_boundaries: None,
                 duration_ms: None,
                 mode: None,
+                source: None,
                 message: Some("eof".into()),
             });
             return Ok(());
@@ -286,6 +341,7 @@ fn run_relay(state: AppState) -> io::Result<()> {
             frame_boundaries: Some(frame_boundaries),
             duration_ms: gap,
             mode: None,
+            source: None,
             message: Some(hex_preview(&buf[..n])),
         });
     }
@@ -323,20 +379,20 @@ async fn run_silence_monitor(state: AppState) {
                 frame_boundaries: None,
                 duration_ms: Some(gap),
                 mode: None,
+                source: None,
                 message: Some("derived_external_gap".into()),
             });
         }
     }
 }
 
-async fn run_world_poll(state: AppState, url: String) {
-    let client = reqwest::Client::new();
+async fn run_world_poll(state: AppState) {
     let mut interval = tokio::time::interval(Duration::from_secs(1));
     interval.set_missed_tick_behavior(MissedTickBehavior::Skip);
 
     loop {
         interval.tick().await;
-        let response = client.get(&url).send().await;
+        let response = state.client.get(&state.world_config_url).send().await;
         let Ok(response) = response else {
             continue;
         };
@@ -359,6 +415,7 @@ async fn run_world_poll(state: AppState, url: String) {
                 frame_boundaries: None,
                 duration_ms: None,
                 mode: Some(config.mode.clone()),
+                source: Some("polled".into()),
                 message: Some("world_config_updated".into()),
             });
         }
@@ -406,6 +463,9 @@ fn parse_prometheus_metrics(body: &str) -> MetricsSnapshot {
             "protozero_drive_0_frame" => snapshot.drive_0_frame = metric_value.parse().ok(),
             "protozero_drive_delta_frame" => snapshot.drive_delta_frame = metric_value.parse().ok(),
             "protozero_frames_total" => snapshot.frames_total = metric_value.parse().ok(),
+            "protozero_sensor_ticks_total" => {
+                snapshot.sensor_ticks_total = metric_value.parse().ok()
+            }
             _ => {}
         }
     }
@@ -444,12 +504,13 @@ mod tests {
 
     #[test]
     fn parses_prometheus_snapshot() {
-        let body = "# HELP protozero_drive_0 x\nprotozero_drive_0 0.75\nprotozero_drive_delta 0.05\nprotozero_events_total 42\nprotozero_frames_total 3\n";
+        let body = "# HELP protozero_drive_0 x\nprotozero_drive_0 0.75\nprotozero_drive_delta 0.05\nprotozero_events_total 42\nprotozero_frames_total 3\nprotozero_sensor_ticks_total 99\n";
         let snapshot = parse_prometheus_metrics(body);
 
         assert_eq!(snapshot.drive_0, Some(0.75));
         assert_eq!(snapshot.drive_delta, Some(0.05));
         assert_eq!(snapshot.events_total, Some(42));
         assert_eq!(snapshot.frames_total, Some(3));
+        assert_eq!(snapshot.sensor_ticks_total, Some(99));
     }
 }

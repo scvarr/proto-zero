@@ -7,6 +7,7 @@ Proto-Zero — исследовательский фреймворк для ра
 - `white`: анатомический двойник black + экспорт метрик Prometheus.
 - `world`: настраиваемый источник событий с HTTP API (`GET/POST /config`).
 - `observer`: внешняя надстройка над white-стеком; relay + live UI без вмешательства в логику агента.
+- `observer`: внешний control+observe инструмент; relay потока, UI наблюдения и управление `world`.
 
 ## Сборка и проверки
 - `cargo build`
@@ -36,10 +37,12 @@ curl -X POST http://localhost:8080/config ^
 - `protozero_drive_0_frame`
 - `protozero_drive_delta_frame`
 - `protozero_frames_total`
+- `protozero_sensor_ticks_total`
 
 ## Observer API
 - `GET /api/state` — агрегированное состояние relay + world + metrics.
 - `GET /api/events` — SSE-лента наблюдений (`chunk`, `silence_gap`, `config_changed`, `relay_status`).
+- `POST /api/world/config` — proxy-обновление `world /config` через observer UI/API.
 - `GET /healthz` — health check.
 
 Замечание: `silence_gap` в observer — это внешняя реконструкция по wall-clock отсутствию входных чанков. Это не внутренний сенсорный тик ADR-016.

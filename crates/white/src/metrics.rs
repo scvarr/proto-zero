@@ -57,6 +57,16 @@ pub static FRAMES_TOTAL: Lazy<IntCounter> = Lazy::new(|| {
     c
 });
 
+pub static SENSOR_TICKS_TOTAL: Lazy<IntCounter> = Lazy::new(|| {
+    let c = IntCounter::with_opts(Opts::new(
+        "protozero_sensor_ticks_total",
+        "Number of sensor ticks (Data or Silence)",
+    ))
+    .unwrap();
+    REGISTRY.register(Box::new(c.clone())).unwrap();
+    c
+});
+
 async fn metrics_handler() -> String {
     let encoder = TextEncoder::new();
     let metric_families = REGISTRY.gather();

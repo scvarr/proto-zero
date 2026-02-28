@@ -35,7 +35,7 @@
 | 012 | Кризис неопределённости события (Transport Dependence)      | ✅      |
 | 013 | Кризис слепоты при насыщении (Saturation Blindness)         | ✅      |
 
-## Этап II — Дифференциация чувствительности (в планах)
+## Agent Track
 
 | ADR                                               | Кризис / Решение                         | Цель                                                           | Статус |
 | ------------------------------------------------- | ---------------------------------------- | -------------------------------------------------------------- | ------ |
@@ -46,8 +46,15 @@
 | [018](../future/ADR-018-bidirectional-coupling.md)           | **Bidirectional Coupling**               | Ввести моторный выход, начало обратной связи                   |        |
 | [019](../future/ADR-019-sensorimotor-calibration.md)         | **Sensorimotor Calibration**             | Drive начинает зависеть от ответа мира                         |        |
 | [020](../20-adr/ADR-020-semantic-framing.md)                 | **Semantic Framing (Burst Boundaries)**  | семантическому восприятию структуры потока                     | ✅      |
+| [023](../future/ADR-023-internal-sensor-self-observation.md) | **Internal Sensor / Self-Observation**   | Агент видит свои собственные состояния как входные данные      |        |
+| 025                                               | **Proto-Hormonal System**                | Медленные внутренние модуляторы (energy, curiosity, bond)      |        |
+| 026                                               | **Social Resonance / Partnership Drive** | Drive ориентируется на состояние другого агента (человека)     |        |
+
+## Observer Track
+
+| ADR                                               | Кризис / Решение                         | Цель                                                           | Статус |
+| ------------------------------------------------- | ---------------------------------------- | -------------------------------------------------------------- | ------ |
+| [008](../08-adr/ADR-008-crisis-of-observation-saturation.md) | **Crisis of Observation Saturation**     | Наблюдение должно различать внутренние режимы агента           | ✅      |
 | [021](../21-adr/ADR-021-configurable-world.md)               | **Configurable World**                   | Управляемая среда эксперимента через API /config               | ✅      |
 | [022](../22-adr/ADR-022-external-observer-overlay.md)        | **External Observer Overlay**            | Внешний relay/UI слой: поток, конфиг мира и метрики в одной сцене | ✅   |
-| [023](../future/ADR-023-internal-sensor-self-observation.md) | **Internal Sensor / Self-Observation**   | Агент видит свои собственные состояния как входные данные      |        |
-| 024                                               | **Proto-Hormonal System**                | Медленные внутренние модуляторы (energy, curiosity, bond)      |        |
-| 025                                               | **Social Resonance / Partnership Drive** | Drive ориентируется на состояние другого агента (человека)     |        |
+| [024](../24-adr/ADR-024-observer-control-plane.md)           | **Observer Control Plane**               | Управление world и наблюдение тиков агента из одного интерфейса | ✅     |

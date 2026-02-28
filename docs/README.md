@@ -9,7 +9,7 @@
 - [Invariants](./02-invariants.md)
 - [ADR Roadmap](./roadmap/ADR-ROADMAP.md)
 
-## Accepted ADRs
+## Agent Track
 - [ADR-000](./00-core/ADR-000-null-core.md)
 - [ADR-001](./01-adr/ADR-001-minimal-input-ephemeral.md)
 - [ADR-001a](./01-adr/ADR-001a-sensor-transport-stdin.md)
@@ -20,7 +20,6 @@
 - [ADR-006](./06-adr/ADR-006-life-as-blocking-loop.md)
 - [ADR-007](./07-adr/ADR-007-world-as-container.md)
 - [ADR-007a](./07-adr/ADR-007a-routing-and-mutex-via-fifo-and-lock.md)
-- [ADR-008](./08-adr/ADR-008-crisis-of-observation-saturation.md)
 - [ADR-009](./09-adr/ADR-009-drive-0-introduction.md)
 - [ADR-010](./10-adr/ADR-010-crisis-of-drive-saturation.md)
 - [ADR-011](./11-adr/ADR-011-drive-regulation.md)
@@ -29,15 +28,18 @@
 - [ADR-014](./14-adr/ADR-014-proto-differential-drive.md)
 - [ADR-015](./15-adr/ADR-015-crisis-of-silence.md)
 - [ADR-016](./16-adr/ADR-016-non-blocking-sensor.md)
-- [ADR-020](./20-adr/ADR-020-semantic-framing.md)
-- [ADR-021](./21-adr/ADR-021-configurable-world.md)
-- [ADR-022](./22-adr/ADR-022-external-observer-overlay.md)
-
-## Future ADRs
 - [ADR-017](./future/ADR-017-event-based-decay.md)
 - [ADR-018](./future/ADR-018-bidirectional-coupling.md)
 - [ADR-019](./future/ADR-019-sensorimotor-calibration.md)
+- [ADR-020](./20-adr/ADR-020-semantic-framing.md)
 - [ADR-023](./future/ADR-023-internal-sensor-self-observation.md)
+
+## Observer Track
+- [ADR-000](./00-core/ADR-000-null-core.md)
+- [ADR-008](./08-adr/ADR-008-crisis-of-observation-saturation.md)
+- [ADR-021](./21-adr/ADR-021-configurable-world.md)
+- [ADR-022](./22-adr/ADR-022-external-observer-overlay.md)
+- [ADR-024](./24-adr/ADR-024-observer-control-plane.md)
 
 ## Recovery notes
 - [Stage-1 Recovery Prompt](./recovery/stage-1.md)

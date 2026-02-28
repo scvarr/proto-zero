@@ -17,7 +17,7 @@ Stage-1 — это первый этап, где у агента появляе�
 | **black** | Этичный агент | Бесконечно читает stdin, увеличивает `drive_0` при поступлении данных. Без вывода. |
 | **white** | Анатомический агент | Аналогичный код, но публикует Prometheus-метрики `drive`, `delta`, frame-динамику. |
 | **world** | Источник данных | Порождает поток байтов (`stdin` или `/dev/urandom`). |
-| **observer** | Внешний наблюдатель | Relay потока + timeline/UI, не вмешивается в логику агента. |
+| **observer** | Внешний наблюдатель | Relay потока + timeline/UI + control plane для `world`, не вмешивается в логику агента. |
 | **docker-compose** | Оркестрация | Два сценария: `world+black`, `world+observer+white` с FIFO и блокировкой запуска. |
 
 ---
@@ -64,13 +64,12 @@ Stage-1 — это первый этап, где у агента появляе�
 >
 > **Components:**
 > - `proto_zero_black`: живой процесс с внутренним `drive_0`.
-> - `proto_zero_white`: экспортирует `/metrics` с `protozero_drive_0`, `protozero_drive_delta`, `protozero_drive_0_frame`, `protozero_drive_delta_frame`, `protozero_events_total`, `protozero_frames_total`.
+> - `proto_zero_white`: экспортирует `/metrics` с `protozero_drive_0`, `protozero_drive_delta`, `protozero_drive_0_frame`, `protozero_drive_delta_frame`, `protozero_events_total`, `protozero_frames_total`, `protozero_sensor_ticks_total`.
 > - `proto_zero_world`: генератор входных байтов с `GET/POST /config`.
-> - `protozero_observer`: внешний relay/UI, строит timeline и organism view.
+> - `protozero_observer`: внешний relay/UI, строит timeline, organism view и проксирует `POST /api/world/config`.
 > - docker-compose: два сценария (`world+black`, `world+observer+white`), одновременный запуск запрещён через lock-том.
 >
 > **Next Goal:**  
 > ADR-010 — *Crisis of Drive Saturation* (перенакопление драйва и необходимость регуляции).
 
 ---
-

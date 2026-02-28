@@ -3,7 +3,7 @@
 
 mod metrics;
 
-use metrics::{DRIVE0, EVENTS_TOTAL, start_metrics_server};
+use metrics::{DRIVE0, EVENTS_TOTAL, SENSOR_TICKS_TOTAL, start_metrics_server};
 use std::net::SocketAddr;
 use std::thread;
 
@@ -29,6 +29,7 @@ fn main() {
     let mut d_frame_prev: f64 = 0.0;
 
     let _ = run_sensor_loop(|event: SensorEvent| {
+        SENSOR_TICKS_TOTAL.inc();
         match event {
             SensorEvent::Data(chunk) => {
                 for &b in chunk {
