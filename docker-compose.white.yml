@@ -1,4 +1,4 @@
-volumes:
+﻿volumes:
   pz-io: {}
   pz-lock: {}
   grafana-storage: {}
@@ -7,7 +7,7 @@ volumes:
 services:
   fifo-init:
     image: alpine
-    command: ["/bin/sh","-lc","mkfifo -m 666 /io/stream || true; tail -f /dev/null"]
+    command: ["/bin/sh","-lc","mkfifo -m 666 /io/world-stream || true; mkfifo -m 666 /io/agent-stream || true; tail -f /dev/null"]
     volumes: ["pz-io:/io"]
 
   lock-white:
@@ -21,16 +21,27 @@ services:
     volumes: ["pz-io:/io"]
     ports:
       - "8080:8080"
-    entrypoint: ["/bin/sh","-lc","test -p /io/stream || mkfifo -m 666 /io/stream; exec world > /io/stream"]
+    entrypoint: ["/bin/sh","-lc","test -p /io/world-stream || mkfifo -m 666 /io/world-stream; exec world > /io/world-stream"]
+
+  observer:
+    build: { context: ., dockerfile: docker/observer.Dockerfile }
+    environment:
+      - OBSERVER_ADDR=0.0.0.0:7070
+      - OBSERVER_WORLD_CONFIG_URL=http://world:8080/config
+      - OBSERVER_METRICS_URL=http://white:9100/metrics
+    depends_on: [ fifo-init, world ]
+    volumes: ["pz-io:/io"]
+    ports:
+      - "7070:7070"
+    entrypoint: ["/bin/sh","-lc","test -p /io/world-stream || mkfifo -m 666 /io/world-stream; test -p /io/agent-stream || mkfifo -m 666 /io/agent-stream; exec cat /io/world-stream | observer > /io/agent-stream"]
 
   white:
     build: { context: ., dockerfile: docker/white.Dockerfile }
     environment:
-      - WHITE_METRICS_ADDR=0.0.0.0:9100   # эндпоинт /metrics
-    depends_on: [ fifo-init, lock-white, world ]
+      - WHITE_METRICS_ADDR=0.0.0.0:9100
+    depends_on: [ fifo-init, lock-white, observer ]
     volumes: ["pz-io:/io","pz-lock:/lock"]
-    # Шим проверяет конфликт (наличие BLACK-лока), затем подаёт поток в stdin white
-    entrypoint: ["/bin/sh","-lc","test -f /lock/BLACK && echo 'Conflict: BLACK stack running' >&2 && exit 42 || true; exec cat /io/stream | white"]
+    entrypoint: ["/bin/sh","-lc","test -f /lock/BLACK && echo 'Conflict: BLACK stack running' >&2 && exit 42 || true; exec cat /io/agent-stream | white"]
 
   prometheus:
     image: prom/prometheus:latest

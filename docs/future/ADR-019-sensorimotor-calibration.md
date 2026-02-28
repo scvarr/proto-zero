@@ -1,8 +1,8 @@
-﻿# ADR-018: Sensorimotor Calibration
+﻿# ADR-019: Sensorimotor Calibration
 
 **Статус:** draft  
 **Дата:** 2025-10-13  
-**Связанные:** [ADR-017-bidirectional-coupling](./ADR-017-bidirectional-coupling.md)  
+**Связанные:** [ADR-018-bidirectional-coupling](./ADR-018-bidirectional-coupling.md)  
 
 ---
 
@@ -24,5 +24,3 @@ Drive адаптируется так, чтобы минимизировать �
 
 ## Результат
 Drive становится функцией взаимодействия, а не только входа.
-
-

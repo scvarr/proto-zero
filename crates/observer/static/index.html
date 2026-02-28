@@ -1,0 +1,283 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proto-Zero Observer</title>
+  <style>
+    :root {
+      --bg: #07131a;
+      --bg2: #12303d;
+      --panel: rgba(9, 23, 31, 0.78);
+      --line: rgba(145, 220, 255, 0.2);
+      --text: #e9f6f8;
+      --muted: #8db2b7;
+      --hot: #ff7a59;
+      --cool: #78dce8;
+      --warn: #ffd166;
+      --ok: #8bd450;
+      --font-head: "Georgia", "Palatino Linotype", serif;
+      --font-body: "Trebuchet MS", "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: var(--font-body);
+      background:
+        radial-gradient(circle at top left, rgba(255, 122, 89, 0.18), transparent 32%),
+        radial-gradient(circle at top right, rgba(120, 220, 232, 0.2), transparent 26%),
+        linear-gradient(135deg, var(--bg), var(--bg2));
+    }
+    main {
+      width: min(1200px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 40px;
+    }
+    .hero {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    h1 {
+      margin: 0;
+      font: 700 clamp(32px, 6vw, 64px)/0.95 var(--font-head);
+      letter-spacing: 0.02em;
+    }
+    .subtitle { color: var(--muted); max-width: 780px; }
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .panel {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.25);
+    }
+    .panel h2 {
+      margin: 0 0 12px;
+      font: 700 14px/1.1 var(--font-body);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+    }
+    .metrics { display: grid; gap: 12px; grid-template-columns: repeat(2, 1fr); }
+    .metric { padding: 12px; border-radius: 16px; background: rgba(255,255,255,0.03); }
+    .metric .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; }
+    .metric .value { font-size: 28px; margin-top: 6px; }
+    .organism-wrap {
+      display: grid;
+      place-items: center;
+      min-height: 320px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at center, rgba(120,220,232,0.08), transparent 40%),
+        linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    }
+    .organism {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      position: relative;
+      background: radial-gradient(circle at 35% 35%, #fff4d6, var(--warn) 10%, var(--hot) 45%, rgba(255,122,89,0.22) 70%, transparent 71%);
+      box-shadow: 0 0 40px rgba(255, 122, 89, 0.55);
+      transform: scale(1);
+      transition: transform 160ms linear, box-shadow 160ms linear, filter 160ms linear;
+      filter: saturate(1.05);
+    }
+    .organism::before,
+    .organism::after {
+      content: "";
+      position: absolute;
+      inset: -26px;
+      border-radius: 50%;
+      border: 1px solid rgba(120, 220, 232, 0.2);
+      animation: orbit 6s linear infinite;
+    }
+    .organism::after { inset: -44px; animation-duration: 10s; }
+    @keyframes orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .pulse-note { position: absolute; bottom: 18px; color: var(--muted); }
+    .timeline {
+      display: grid;
+      gap: 10px;
+      max-height: 360px;
+      overflow: auto;
+    }
+    .event {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.025);
+    }
+    .event .kind { font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 0.14em; }
+    .event .meta { color: var(--muted); font-size: 13px; }
+    .event.chunk .kind { color: var(--cool); }
+    .event.silence_gap .kind { color: var(--warn); }
+    .event.config_changed .kind { color: var(--ok); }
+    .event.relay_status .kind { color: var(--hot); }
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      font-size: 13px;
+    }
+    .full { margin-top: 16px; }
+    @media (max-width: 700px) {
+      .metrics { grid-template-columns: 1fr; }
+      .event { grid-template-columns: 1fr; }
+      main { width: min(100% - 20px, 1200px); }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <h1>Proto-Zero Observer</h1>
+      <div class="subtitle">Внешний контур наблюдения: relay дублирует входной поток, сопоставляет его с world config и метриками white, затем рисует временную ленту и абстрактное тело агента.</div>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <h2>Organism</h2>
+        <div class="organism-wrap">
+          <div class="organism" id="organism"></div>
+          <div class="pulse-note" id="organism-note">Ожидание данных</div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2>Signal Board</h2>
+        <div class="metrics">
+          <div class="metric"><div class="label">Drive-0</div><div class="value" id="drive0">-</div></div>
+          <div class="metric"><div class="label">Drive delta</div><div class="value" id="driveDelta">-</div></div>
+          <div class="metric"><div class="label">Chunks</div><div class="value" id="chunksTotal">-</div></div>
+          <div class="metric"><div class="label">Bytes</div><div class="value" id="bytesTotal">-</div></div>
+          <div class="metric"><div class="label">Frames</div><div class="value" id="framesTotal">-</div></div>
+          <div class="metric"><div class="label">Silence</div><div class="value" id="silenceState">-</div></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="grid full">
+      <article class="panel">
+        <h2>World</h2>
+        <div class="chips" id="worldChips"></div>
+      </article>
+      <article class="panel">
+        <h2>Timeline</h2>
+        <div class="timeline" id="timeline"></div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const ids = {
+      drive0: document.getElementById('drive0'),
+      driveDelta: document.getElementById('driveDelta'),
+      chunksTotal: document.getElementById('chunksTotal'),
+      bytesTotal: document.getElementById('bytesTotal'),
+      framesTotal: document.getElementById('framesTotal'),
+      silenceState: document.getElementById('silenceState'),
+      worldChips: document.getElementById('worldChips'),
+      timeline: document.getElementById('timeline'),
+      organism: document.getElementById('organism'),
+      organismNote: document.getElementById('organism-note')
+    };
+
+    function fmt(value, digits = 3) {
+      return value == null ? '-' : Number(value).toFixed(digits);
+    }
+
+    function renderState(state) {
+      ids.drive0.textContent = fmt(state.metrics.drive_0, 4);
+      ids.driveDelta.textContent = fmt(state.metrics.drive_delta, 5);
+      ids.chunksTotal.textContent = state.relay.chunks_total ?? '-';
+      ids.bytesTotal.textContent = state.relay.bytes_total ?? '-';
+      ids.framesTotal.textContent = state.metrics.frames_total ?? state.relay.frame_boundaries_total ?? '-';
+      ids.silenceState.textContent = state.relay.currently_silent
+        ? `derived gap ${state.relay.last_gap_ms || 0} ms`
+        : 'flowing';
+
+      renderWorld(state.world);
+      renderEvents(state.recent_events || []);
+      renderOrganism(state);
+    }
+
+    function renderWorld(world) {
+      ids.worldChips.innerHTML = '';
+      const entries = world ? [
+        ['mode', world.mode],
+        ['bytes/s', world.bytes_per_sec],
+        ['chunk', world.chunk_size],
+        ['frame', world.frame_bytes],
+        ['jitter', world.jitter_ms],
+        ['seed', world.seed]
+      ] : [['world', 'unavailable']];
+
+      for (const [label, value] of entries) {
+        const chip = document.createElement('div');
+        chip.className = 'chip';
+        chip.textContent = `${label}: ${value}`;
+        ids.worldChips.appendChild(chip);
+      }
+    }
+
+    function renderEvents(events) {
+      ids.timeline.innerHTML = '';
+      [...events].reverse().slice(0, 40).forEach((event) => {
+        const row = document.createElement('div');
+        row.className = `event ${event.kind}`;
+        const ts = new Date(event.ts_ms).toLocaleTimeString();
+        const detail = [];
+        if (event.size != null) detail.push(`size ${event.size}`);
+        if (event.frame_boundaries != null) detail.push(`frames ${event.frame_boundaries}`);
+        if (event.duration_ms != null) detail.push(`gap ${event.duration_ms}ms`);
+        if (event.mode) detail.push(`mode ${event.mode}`);
+        if (event.message) detail.push(event.message);
+        row.innerHTML = `<div class="kind">${event.kind.replace('_', ' ')}</div><div><div>${ts}</div><div class="meta">${detail.join(' · ')}</div></div>`;
+        ids.timeline.appendChild(row);
+      });
+    }
+
+    function renderOrganism(state) {
+      const drive = state.metrics.drive_0 ?? 0;
+      const delta = Math.abs(state.metrics.drive_delta ?? 0);
+      const silent = state.relay.currently_silent;
+      const scale = 0.9 + Math.min(drive, 1) * 0.7 + Math.min(delta * 80, 0.25);
+      const blur = 18 + Math.min(drive * 40, 35);
+      const hue = silent ? 40 : 0;
+      ids.organism.style.transform = `scale(${scale})`;
+      ids.organism.style.boxShadow = `0 0 ${blur}px rgba(255, ${silent ? '209' : '122'}, ${silent ? '102' : '89'}, 0.65)`;
+      ids.organism.style.filter = `hue-rotate(${hue}deg) saturate(${1 + delta * 20})`;
+      ids.organismNote.textContent = silent
+        ? `Внешняя тишина: ${state.relay.last_gap_ms || 0} ms`
+        : `Поток активен, delta=${fmt(state.metrics.drive_delta, 5)}`;
+    }
+
+    async function refresh() {
+      const response = await fetch('/api/state');
+      const state = await response.json();
+      renderState(state);
+    }
+
+    refresh();
+    setInterval(refresh, 1200);
+
+    const events = new EventSource('/api/events');
+    events.addEventListener('observer', () => refresh());
+  </script>
+</body>
+</html>

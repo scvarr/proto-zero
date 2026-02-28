@@ -7,7 +7,7 @@
 use axum::{Json, Router, routing::get};
 use bytes::BytesMut;
 use parking_lot::RwLock;
-use rand::{RngCore, SeedableRng, rngs::StdRng};
+use rand::{Rng, SeedableRng, rngs::StdRng};
 use serde::{Deserialize, Serialize};
 use std::{
     io::{self, BufRead, Write},
@@ -179,10 +179,10 @@ fn run_generator(shared: Shared) -> anyhow::Result<()> {
     }
 }
 
-/// Пишем n псевдослучайных байт через RngCore::fill_bytes (без метода gen).
+/// Пишем n псевдослучайных байт через Rng::fill.
 fn write_random<W: Write>(mut w: W, n: usize, rng: &mut StdRng) -> io::Result<()> {
     let mut buf = BytesMut::zeroed(n);
-    rng.fill_bytes(&mut buf[..]);
+    rng.fill(&mut buf[..]);
     w.write_all(&buf)?;
     Ok(())
 }
@@ -209,7 +209,7 @@ fn pacing(cfg: &Config, n_bytes: usize) -> io::Result<()> {
 fn seeded_rng(seed: u64) -> StdRng {
     if seed == 0 {
         let mut seed_bytes = [0u8; 32];
-        rand::rng().fill_bytes(&mut seed_bytes);
+        rand::rng().fill(&mut seed_bytes);
         StdRng::from_seed(seed_bytes)
     } else {
         // расширяем 8-байтовый сид до 32 байт

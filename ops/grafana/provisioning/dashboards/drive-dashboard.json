@@ -1,23 +1,49 @@
-{
-  "annotations":{"list":[]},
-  "editable":true,
-  "gnetId":null,
-  "graphTooltip":0,
-  "id":1,
-  "panels":[
+﻿{
+  "annotations": {"list": []},
+  "editable": true,
+  "graphTooltip": 0,
+  "id": 1,
+  "panels": [
     {
-      "type":"timeseries",
-      "title":"Drive 0",
-      "targets":[{"expr":"protozero_drive_0","refId":"A"}],
-      "gridPos":{"h":9,"w":24,"x":0,"y":0}
+      "type": "timeseries",
+      "title": "Drive 0",
+      "targets": [{"expr": "protozero_drive_0", "refId": "A"}],
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+    },
+    {
+      "type": "timeseries",
+      "title": "Drive Delta",
+      "targets": [{"expr": "protozero_drive_delta", "refId": "A"}],
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+    },
+    {
+      "type": "timeseries",
+      "title": "Events Rate",
+      "targets": [{"expr": "rate(protozero_events_total[1m])", "refId": "A"}],
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+    },
+    {
+      "type": "timeseries",
+      "title": "Frames Rate",
+      "targets": [{"expr": "rate(protozero_frames_total[1m])", "refId": "A"}],
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+    },
+    {
+      "type": "timeseries",
+      "title": "Frame Drive",
+      "targets": [
+        {"expr": "protozero_drive_0_frame", "refId": "A"},
+        {"expr": "protozero_drive_delta_frame", "refId": "B"}
+      ],
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16}
     }
   ],
-  "schemaVersion":39,
-  "style":"dark",
-  "tags":["protozero"],
-  "time":{"from":"now-15m","to":"now"},
-  "timepicker":{},
-  "timezone":"",
-  "title":"Proto-Zero — Drive",
-  "version":1
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": ["protozero"],
+  "time": {"from": "now-15m", "to": "now"},
+  "timepicker": {},
+  "timezone": "",
+  "title": "Proto-Zero — Drive & Frames",
+  "version": 2
 }

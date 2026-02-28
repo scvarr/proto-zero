@@ -28,14 +28,16 @@
 - [ADR-013](./13-adr/ADR-013-crisis-of-saturation-blindness.md)
 - [ADR-014](./14-adr/ADR-014-proto-differential-drive.md)
 - [ADR-015](./15-adr/ADR-015-crisis-of-silence.md)
+- [ADR-016](./16-adr/ADR-016-non-blocking-sensor.md)
 - [ADR-020](./20-adr/ADR-020-semantic-framing.md)
 - [ADR-021](./21-adr/ADR-021-configurable-world.md)
+- [ADR-022](./22-adr/ADR-022-external-observer-overlay.md)
 
 ## Future ADRs
-- [ADR-016](./future/ADR-016-event-based-decay.md)
-- [ADR-017](./future/ADR-017-bidirectional-coupling.md)
-- [ADR-018](./future/ADR-018-sensorimotor-calibration.md)
-- [ADR-019](./future/ADR-019-internal-sensor-self-observation.md)
+- [ADR-017](./future/ADR-017-event-based-decay.md)
+- [ADR-018](./future/ADR-018-bidirectional-coupling.md)
+- [ADR-019](./future/ADR-019-sensorimotor-calibration.md)
+- [ADR-023](./future/ADR-023-internal-sensor-self-observation.md)
 
 ## Recovery notes
 - [Stage-1 Recovery Prompt](./recovery/stage-1.md)

@@ -39,15 +39,15 @@
 
 | ADR                                               | Кризис / Решение                         | Цель                                                           | Статус |
 | ------------------------------------------------- | ---------------------------------------- | -------------------------------------------------------------- | ------ |
-| [014](../14-adr/ADR-014-proto-differential-drive.md)        | **Proto-Differential Drive**             | Ввести ощущение изменения, Δ-канал (минимальная память 1 шага) | ✅      |
-| [015](../15-adr/ADR-015-crisis-of-silence.md)               | **Crisis of Silence**                    | Отсутствие событий ≠ насыщение → зачаток времени               | ✅      |
+| [014](../14-adr/ADR-014-proto-differential-drive.md)         | **Proto-Differential Drive**             | Ввести ощущение изменения, Δ-канал (минимальная память 1 шага) | ✅      |
+| [015](../15-adr/ADR-015-crisis-of-silence.md)                | **Crisis of Silence**                    | Отсутствие событий ≠ насыщение → зачаток времени               | ✅      |
 | [016](../16-adr/ADR-016-non-blocking-sensor.md)              | **Non-blocking Sensor**                  | Рождение времени: сенсор различает стимул, тишину и смерть     | ✅      |
-| [017](../future/ADR-017-bidirectional-coupling.md)           | **Bidirectional Coupling**               | Ввести моторный выход, начало обратной связи                   |        |
-| [018](../future/ADR-018-sensorimotor-calibration.md)         | **Sensorimotor Calibration**             | Drive начинает зависеть от ответа мира                         |        |
-| [019](../future/ADR-019-internal-sensor-self-observation.md) | **Internal Sensor / Self-Observation**   | Агент видит свои собственные состояния как входные данные      |        |
+| [017](../future/ADR-017-event-based-decay.md)                | **Event-based Decay**                    | Тишина становится событием угасания drive                      | next    |
+| [018](../future/ADR-018-bidirectional-coupling.md)           | **Bidirectional Coupling**               | Ввести моторный выход, начало обратной связи                   |        |
+| [019](../future/ADR-019-sensorimotor-calibration.md)         | **Sensorimotor Calibration**             | Drive начинает зависеть от ответа мира                         |        |
 | [020](../20-adr/ADR-020-semantic-framing.md)                 | **Semantic Framing (Burst Boundaries)**  | семантическому восприятию структуры потока                     | ✅      |
-| [021](../21-adr/ADR-021-configurable-world.md) | **Configurable World** | Управляемая среда эксперимента через API /config | ✅      |
-| 022                                               | **Crisis of Self-Interference**          | Возникает необходимость различать «я» и «не я»                 |        |
-| 023                                               | **Proto-Hormonal System**                | Медленные внутренние модуляторы (energy, curiosity, bond)      |        |
-| 024                                               | **Social Resonance / Partnership Drive** | Drive ориентируется на состояние другого агента (человека)     |        |
-
+| [021](../21-adr/ADR-021-configurable-world.md)               | **Configurable World**                   | Управляемая среда эксперимента через API /config               | ✅      |
+| [022](../22-adr/ADR-022-external-observer-overlay.md)        | **External Observer Overlay**            | Внешний relay/UI слой: поток, конфиг мира и метрики в одной сцене | ✅   |
+| [023](../future/ADR-023-internal-sensor-self-observation.md) | **Internal Sensor / Self-Observation**   | Агент видит свои собственные состояния как входные данные      |        |
+| 024                                               | **Proto-Hormonal System**                | Медленные внутренние модуляторы (energy, curiosity, bond)      |        |
+| 025                                               | **Social Resonance / Partnership Drive** | Drive ориентируется на состояние другого агента (человека)     |        |

@@ -1,7 +1,7 @@
-FROM rust:1-bullseye AS build
+﻿FROM rust:1-bullseye AS build
 WORKDIR /app
-COPY ../../Cargo.toml ../../rust-toolchain.toml ./
-COPY ../../crates crates
+COPY Cargo.toml Cargo.lock rust-toolchain.toml ./
+COPY crates crates
 RUN cargo fetch
 
 RUN cargo build --release -p proto_zero_world

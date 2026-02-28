@@ -1,8 +1,8 @@
-﻿# ADR-019: Internal Sensor / Self-Observation
+﻿# ADR-023: Internal Sensor / Self-Observation
 
 **Статус:** draft  
 **Дата:** 2025-10-13  
-**Связанные:** [ADR-018-sensorimotor-calibration](./ADR-018-sensorimotor-calibration.md)  
+**Связанные:** [ADR-019-sensorimotor-calibration](./ADR-019-sensorimotor-calibration.md)  
 
 ---
 
@@ -26,5 +26,3 @@
 ## Результат
 Появление самореференции и начальной формы «я».  
 Это рубеж между Proto-Zero и Proto-One.
-
-

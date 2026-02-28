@@ -4,9 +4,10 @@ COPY Cargo.toml Cargo.lock rust-toolchain.toml ./
 COPY crates crates
 RUN cargo fetch
 
-RUN cargo build --release -p agent_white
+RUN cargo build --release -p protozero_observer
 
 FROM debian:bullseye-slim
-COPY --from=build /app/target/release/agent_white /usr/local/bin/white
+WORKDIR /app
+COPY --from=build /app/target/release/protozero_observer /usr/local/bin/observer
 USER nobody
-ENTRYPOINT ["white"]
+ENTRYPOINT ["observer"]
