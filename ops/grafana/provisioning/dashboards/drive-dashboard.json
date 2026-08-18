@@ -7,17 +7,32 @@
   "panels":[
     {
       "type":"timeseries",
-      "title":"Drive 0",
-      "targets":[{"expr":"protozero_drive_0","refId":"A"}],
+      "title":"Receptor / previous",
+      "targets":[
+        {"expr":"protozero_receptor_current","legendFormat":"current","refId":"A"},
+        {"expr":"protozero_previous_value","legendFormat":"previous","refId":"B"}
+      ],
       "gridPos":{"h":9,"w":24,"x":0,"y":0}
+    },
+    {
+      "type":"timeseries",
+      "title":"Detected changes",
+      "targets":[{"expr":"protozero_changes_total","refId":"A"}],
+      "gridPos":{"h":8,"w":12,"x":0,"y":9}
+    },
+    {
+      "type":"timeseries",
+      "title":"Reads",
+      "targets":[{"expr":"protozero_reads_total","refId":"A"}],
+      "gridPos":{"h":8,"w":12,"x":12,"y":9}
     }
   ],
   "schemaVersion":39,
   "style":"dark",
-  "tags":["protozero"],
+  "tags":["protozero","adr-025"],
   "time":{"from":"now-15m","to":"now"},
   "timepicker":{},
   "timezone":"",
-  "title":"Proto-Zero — Drive",
-  "version":1
+  "title":"Proto-Zero — ADR-025",
+  "version":2
 }

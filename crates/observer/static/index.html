@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proto-Zero Observer</title>
+  <style>
+    :root {
+      --bg: #07131a;
+      --bg2: #12303d;
+      --panel: rgba(9, 23, 31, 0.82);
+      --line: rgba(145, 220, 255, 0.2);
+      --text: #e9f6f8;
+      --muted: #8db2b7;
+      --hot: #ff7a59;
+      --cool: #78dce8;
+      --warn: #ffd166;
+      --ok: #8bd450;
+      --font-head: "Georgia", "Palatino Linotype", serif;
+      --font-body: "Trebuchet MS", "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: var(--font-body);
+      background:
+        radial-gradient(circle at top left, rgba(255, 122, 89, 0.18), transparent 32%),
+        radial-gradient(circle at top right, rgba(120, 220, 232, 0.2), transparent 26%),
+        linear-gradient(135deg, var(--bg), var(--bg2));
+    }
+    main { width: min(1200px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 40px; }
+    h1 { margin: 0; font: 700 clamp(32px, 6vw, 64px)/0.95 var(--font-head); }
+    .hero { display: grid; gap: 12px; margin-bottom: 18px; }
+    .subtitle { color: var(--muted); max-width: 900px; }
+    .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .panel {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.25);
+    }
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+    }
+    .byte {
+      font: 700 clamp(52px, 10vw, 92px)/1 var(--font-head);
+      margin: 12px 0 4px;
+    }
+    .bits { font: 700 22px/1.3 monospace; color: var(--cool); letter-spacing: .14em; }
+    .metrics { display: grid; gap: 10px; grid-template-columns: repeat(2, 1fr); }
+    .metric { padding: 12px; border-radius: 16px; background: rgba(255,255,255,0.03); }
+    .metric .label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .12em; }
+    .metric .value { font-size: 27px; margin-top: 6px; overflow-wrap: anywhere; }
+    .compare {
+      min-height: 240px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+    .node {
+      min-width: 0;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font: 700 clamp(32px, 7vw, 62px)/1 var(--font-head);
+      background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.18), rgba(120,220,232,.12) 40%, rgba(120,220,232,.03) 70%);
+      border: 1px solid rgba(120,220,232,.35);
+      box-shadow: 0 0 34px rgba(120,220,232,.12);
+    }
+    .arrow { font-size: 36px; color: var(--muted); }
+    .compare.changed .node:last-child { border-color: var(--hot); box-shadow: 0 0 42px rgba(255,122,89,.35); }
+    .compare.same .node:last-child { border-color: var(--ok); }
+    .compare-note { color: var(--muted); text-align: center; margin-top: 10px; }
+    .control { display: flex; gap: 10px; margin-top: 18px; }
+    input {
+      min-width: 0; width: 100%;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 12px;
+      padding: 11px 12px;
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      font: inherit;
+    }
+    button {
+      border: 0; border-radius: 999px; padding: 11px 18px;
+      background: linear-gradient(135deg, var(--hot), #ff9a65);
+      color: white; font-weight: 700; cursor: pointer;
+    }
+    .status { min-height: 20px; color: var(--muted); margin-top: 8px; font-size: 13px; }
+    .full { margin-top: 16px; }
+    .timeline { display: grid; gap: 9px; max-height: 420px; overflow: auto; }
+    .event {
+      display: grid; grid-template-columns: 110px 110px 1fr; gap: 12px;
+      padding: 10px 12px; border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.06);
+      background: rgba(255,255,255,.025);
+    }
+    .event .kind { font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: .1em; }
+    .event.world_write .kind { color: var(--warn); }
+    .event.white_change .kind { color: var(--cool); }
+    .meta { color: var(--muted); font-size: 13px; }
+    @media (max-width: 700px) {
+      main { width: min(100% - 20px, 1200px); }
+      .metrics { grid-template-columns: 1fr; }
+      .event { grid-template-columns: 1fr; }
+      .compare { gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <h1>Proto-Zero Observer</h1>
+    <div class="subtitle">
+      Лабораторное наблюдение ADR-025. World меняет одну внешнюю ячейку; White показывает,
+      какие различия реально появились в доступной агенту последовательности наблюдений.
+    </div>
+  </section>
+
+  <section class="grid">
+    <article class="panel">
+      <h2>World · receptor cell</h2>
+      <div class="byte" id="worldValue">-</div>
+      <div class="bits" id="worldBits">--------</div>
+      <form id="worldForm" class="control">
+        <input id="worldInput" type="number" min="0" max="255" required />
+        <button type="submit">Write</button>
+      </form>
+      <div class="status" id="worldStatus"></div>
+    </article>
+
+    <article class="panel">
+      <h2>White instrumentation</h2>
+      <div class="metrics">
+        <div class="metric"><div class="label">current read</div><div class="value" id="current">-</div></div>
+        <div class="metric"><div class="label">agent previous</div><div class="value" id="previous">-</div></div>
+        <div class="metric"><div class="label">last changed</div><div class="value" id="changed">-</div></div>
+        <div class="metric"><div class="label">detected changes</div><div class="value" id="changesTotal">-</div></div>
+        <div class="metric"><div class="label">reads</div><div class="value" id="readsTotal">-</div></div>
+        <div class="metric"><div class="label">world / white</div><div class="value" id="agreement">-</div></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="panel full">
+    <h2>Last comparison</h2>
+    <div class="compare" id="compare">
+      <div class="node" id="comparePrev">-</div>
+      <div class="arrow">→</div>
+      <div class="node" id="compareCurrent">-</div>
+    </div>
+    <div class="compare-note" id="compareNote">Baseline not observed yet</div>
+  </section>
+
+  <section class="panel full">
+    <h2>Laboratory timeline</h2>
+    <div class="timeline" id="timeline"></div>
+  </section>
+</main>
+
+<script>
+  const el = Object.fromEntries([
+    'worldValue','worldBits','worldForm','worldInput','worldStatus',
+    'current','previous','changed','changesTotal','readsTotal','agreement',
+    'compare','comparePrev','compareCurrent','compareNote','timeline'
+  ].map(id => [id, document.getElementById(id)]));
+
+  function bits(value) {
+    return value == null ? '--------' : Number(value).toString(2).padStart(8, '0');
+  }
+
+  function render(state) {
+    const world = state.world?.value;
+    const white = state.white;
+    const comparison = white?.last_comparison;
+
+    el.worldValue.textContent = world ?? '-';
+    el.worldBits.textContent = bits(world);
+    el.current.textContent = white?.current ?? '-';
+    el.previous.textContent = white?.previous ?? '-';
+    el.changed.textContent = comparison == null ? '-' : (comparison.changed ? 'YES' : 'NO');
+    el.changesTotal.textContent = white?.changes_total ?? '-';
+    el.readsTotal.textContent = white?.reads_total?.toLocaleString?.() ?? '-';
+    el.agreement.textContent =
+      world == null || white?.current == null ? '-' : (world === white.current ? 'same' : 'different');
+
+    if (comparison) {
+      el.comparePrev.textContent = comparison.previous;
+      el.compareCurrent.textContent = comparison.current;
+      el.compare.className = `compare ${comparison.changed ? 'changed' : 'same'}`;
+      el.compareNote.textContent = comparison.changed
+        ? 'White detected a value change'
+        : 'The two consecutive observations are equal';
+    } else {
+      el.comparePrev.textContent = '-';
+      el.compareCurrent.textContent = '-';
+      el.compare.className = 'compare';
+      el.compareNote.textContent = 'Baseline not observed yet';
+    }
+
+    renderTimeline(state.recent_events || []);
+  }
+
+  function renderTimeline(events) {
+    el.timeline.innerHTML = '';
+    [...events].reverse().slice(0, 80).forEach(event => {
+      const row = document.createElement('div');
+      row.className = `event ${event.kind}`;
+      const ts = new Date(event.ts_ms).toLocaleTimeString();
+      const transition = `${event.from} → ${event.to}`;
+      const detail = event.kind === 'world_write'
+        ? (event.from === event.to ? 'same value written; agent has no write event' : 'world changed receptor value')
+        : `White detected change${event.seq == null ? '' : ` #${event.seq}`}`;
+      row.innerHTML = `<div class="kind">${event.kind.replace('_',' ')}</div><div>${transition}</div><div><div>${ts}</div><div class="meta">${detail}</div></div>`;
+      el.timeline.appendChild(row);
+    });
+  }
+
+  async function refresh() {
+    const response = await fetch('/api/state');
+    if (!response.ok) return;
+    render(await response.json());
+  }
+
+  el.worldForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    const value = Number(el.worldInput.value);
+    el.worldStatus.textContent = 'writing...';
+
+    try {
+      const response = await fetch('/api/world/cell', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value })
+      });
+      if (!response.ok) throw new Error(await response.text());
+      el.worldStatus.textContent = `written ${value}`;
+      await refresh();
+    } catch (error) {
+      el.worldStatus.textContent = `failed: ${error.message}`;
+    }
+  });
+
+  refresh();
+  setInterval(refresh, 1000);
+
+  const events = new EventSource('/api/events');
+  events.addEventListener('observer', refresh);
+</script>
+</body>
+</html>
