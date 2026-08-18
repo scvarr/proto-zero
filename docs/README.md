@@ -3,6 +3,7 @@
 ## Current status
 - Current root line: [ADR-025 — Change Detection / First Private Memory](./25-adr/ADR-025-change-detection-first-memory.md) is implemented and laboratory-verified.
 - [ADR-026 — First Internal Dynamic Coordinate (`drive_0`)](./26-adr/ADR-026-first-internal-drive.md) is implemented and laboratory-verified.
+- [ADR-027 — Symmetric Consequence of Comparison](./27-adr/ADR-027-symmetric-comparison-consequence.md) is implemented; laboratory verification pending.
 
 ## Core docs
 - [Physical Digital Substrate and Evolution Triggers](./00-core/physical-digital-substrate.md)
@@ -33,6 +34,7 @@
 - [ADR-021](./21-adr/ADR-021-configurable-world.md)
 - [ADR-025](./25-adr/ADR-025-change-detection-first-memory.md)
 - [ADR-026](./26-adr/ADR-026-first-internal-drive.md)
+- [ADR-027](./27-adr/ADR-027-symmetric-comparison-consequence.md)
 
 ## Future ADRs
 - [ADR-016](./future/ADR-016-event-based-decay.md)

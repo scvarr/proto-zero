@@ -1,5 +1,5 @@
 //! BLACK: сама сущность без observability.
-//! ADR-026: изменение receptor оставляет первый внутренний динамический след `drive_0`.
+//! ADR-027: оба исхода сравнения receptor причинно изменяют `drive_0`.
 
 use memmap2::MmapOptions;
 use std::{
@@ -29,11 +29,13 @@ fn main() {
 
             if changed {
                 drive_0 += 1.0;
-
-                // BLACK ничего не публикует. black_box не даёт оптимизатору
-                // удалить немое внутреннее состояние drive_0.
-                let _ = black_box(drive_0);
+            } else {
+                drive_0 -= 1.0;
             }
+
+            // BLACK ничего не публикует. black_box не даёт оптимизатору
+            // удалить немое внутреннее состояние drive_0.
+            let _ = black_box(drive_0);
         }
 
         previous = Some(current);

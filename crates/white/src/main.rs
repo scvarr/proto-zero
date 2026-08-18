@@ -1,5 +1,5 @@
 //! WHITE: анатомический двойник BLACK + внешняя лабораторная instrumentation.
-//! ADR-026: обнаруженное изменение увеличивает внутреннюю координату `drive_0` на `1.0`.
+//! ADR-027: различие сдвигает `drive_0` на `+1.0`, равенство — на `-1.0`.
 
 mod metrics;
 
@@ -43,6 +43,8 @@ fn main() {
 
             if changed {
                 drive_0 += 1.0;
+            } else {
+                drive_0 -= 1.0;
             }
 
             metrics::record_comparison(previous_value, current, changed, drive_0);
