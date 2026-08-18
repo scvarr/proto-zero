@@ -1,12 +1,13 @@
 volumes:
-  pz-io: {}
+  pz-receptor: {}
   pz-lock: {}
 
 services:
-  fifo-init:
+  receptor-init:
     image: alpine
-    command: ["/bin/sh","-lc","mkfifo -m 666 /io/stream || true; tail -f /dev/null"]
-    volumes: ["pz-io:/io"]
+    command: ["/bin/sh","-lc","mkdir -p /receptor; : > /receptor/cell; truncate -s 1 /receptor/cell; chmod 666 /receptor/cell"]
+    volumes: ["pz-receptor:/receptor"]
+    restart: "no"
 
   lock-black:
     image: alpine
@@ -15,13 +16,25 @@ services:
 
   world:
     build: { context: ., dockerfile: docker/world.Dockerfile }
-    depends_on: [ fifo-init, lock-black ]
-    volumes: ["pz-io:/io"]
-    entrypoint: ["/bin/sh","-lc","cat /dev/urandom | world --source=stdin --chunk=1 > /io/stream"]
+    depends_on:
+      receptor-init:
+        condition: service_completed_successfully
+      lock-black:
+        condition: service_started
+    volumes: ["pz-receptor:/receptor"]
+    ports:
+      - "8080:8080"
 
   black:
     build: { context: ., dockerfile: docker/black.Dockerfile }
-    depends_on: [ fifo-init, lock-black, world ]
-    volumes: ["pz-io:/io","pz-lock:/lock"]
-    # Шим проверяет конфликт (наличие WHITE-лока), затем подаёт поток в stdin black
-    entrypoint: ["/bin/sh","-lc","test -f /lock/WHITE && echo 'Conflict: WHITE stack running' >&2 && exit 42 || true; cat /io/stream | black"]
+    depends_on:
+      receptor-init:
+        condition: service_completed_successfully
+      lock-black:
+        condition: service_started
+      world:
+        condition: service_started
+    volumes:
+      - "pz-receptor:/receptor:ro"
+      - "pz-lock:/lock"
+    entrypoint: ["/bin/sh","-lc","test -f /lock/WHITE && echo 'Conflict: WHITE stack running' >&2 && exit 42 || true; exec black"]

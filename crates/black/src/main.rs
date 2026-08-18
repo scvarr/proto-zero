@@ -2,7 +2,11 @@
 //! ADR-025: одна внешняя receptor cell и одна собственная память `previous`.
 
 use memmap2::MmapOptions;
-use std::{fs::File, hint::black_box, ptr};
+use std::{
+    fs::File,
+    hint::black_box,
+    sync::atomic::{AtomicU8, Ordering},
+};
 
 const RECEPTOR_PATH: &str = "/receptor/cell";
 
@@ -13,13 +17,11 @@ fn main() {
         .map_raw_read_only(&file)
         .expect("failed to map receptor cell");
 
-    let receptor_ptr = receptor.as_ptr();
+    let receptor_cell = unsafe { AtomicU8::from_ptr(receptor.as_mut_ptr()) };
     let mut previous: Option<u8> = None;
 
     loop {
-        // Ячейка может быть изменена другим процессом в любой момент.
-        // Volatile-read не позволяет компилятору заменить повторные чтения кешированным значением.
-        let current = unsafe { ptr::read_volatile(receptor_ptr) };
+        let current = receptor_cell.load(Ordering::Relaxed);
 
         if let Some(previous_value) = previous {
             let changed = current != previous_value;
