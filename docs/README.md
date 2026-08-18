@@ -5,6 +5,7 @@
 - [ADR-026 — First Internal Dynamic Coordinate (`drive_0`)](./26-adr/ADR-026-first-internal-drive.md) is implemented and laboratory-verified.
 
 ## Core docs
+- [Physical Digital Substrate and Evolution Triggers](./00-core/physical-digital-substrate.md)
 - [Glossary](./01-glossary.md)
 - [Invariants](./02-invariants.md)
 - [ADR Roadmap](./roadmap/ADR-ROADMAP.md)
