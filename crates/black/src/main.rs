@@ -1,5 +1,5 @@
 //! BLACK: сама сущность без observability.
-//! ADR-025: одна внешняя receptor cell и одна собственная память `previous`.
+//! ADR-026: изменение receptor оставляет первый внутренний динамический след `drive_0`.
 
 use memmap2::MmapOptions;
 use std::{
@@ -19,6 +19,7 @@ fn main() {
 
     let receptor_cell = unsafe { AtomicU8::from_ptr(receptor.as_mut_ptr()) };
     let mut previous: Option<u8> = None;
+    let mut drive_0: f64 = 0.0;
 
     loop {
         let current = receptor_cell.load(Ordering::Relaxed);
@@ -26,9 +27,13 @@ fn main() {
         if let Some(previous_value) = previous {
             let changed = current != previous_value;
 
-            // BLACK ничего не публикует. black_box сохраняет само эфемерное вычисление
-            // от удаления оптимизатором, не превращая changed в состояние агента.
-            let _ = black_box(changed);
+            if changed {
+                drive_0 += 1.0;
+
+                // BLACK ничего не публикует. black_box не даёт оптимизатору
+                // удалить немое внутреннее состояние drive_0.
+                let _ = black_box(drive_0);
+            }
         }
 
         previous = Some(current);
