@@ -3,6 +3,7 @@
 ## Current status
 - Active stage: **Stage-1 (Emergent Drive)**.
 - Agent behavior: event-driven drive dynamics (`drive_0`, `delta`, frame-local dynamics).
+- Current root re-evaluation: [ADR-025 — Change Detection / First Private Memory](./25-adr/ADR-025-change-detection-first-memory.md) (accepted, implementation pending).
 
 ## Core docs
 - [Glossary](./01-glossary.md)
@@ -30,6 +31,7 @@
 - [ADR-015](./15-adr/ADR-015-crisis-of-silence.md)
 - [ADR-020](./20-adr/ADR-020-semantic-framing.md)
 - [ADR-021](./21-adr/ADR-021-configurable-world.md)
+- [ADR-025](./25-adr/ADR-025-change-detection-first-memory.md)
 
 ## Future ADRs
 - [ADR-016](./future/ADR-016-event-based-decay.md)
