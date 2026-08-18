@@ -1,6 +1,6 @@
 # ADR-025: Crisis of Change Detection — первая собственная память
 
-**Статус:** accepted, implementation pending  
+**Статус:** implemented, laboratory verified  
 **Дата:** 2026-08-18  
 **Связанные:** [ADR-000](../00-core/ADR-000-null-core.md)
 

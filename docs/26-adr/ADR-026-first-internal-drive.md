@@ -1,6 +1,6 @@
 # ADR-026: First Internal Dynamic Coordinate — `drive_0`
 
-**Статус:** accepted, implementation pending  
+**Статус:** implemented, laboratory verified  
 **Дата:** 2026-08-18  
 **Связанные:** [ADR-025](../25-adr/ADR-025-change-detection-first-memory.md)
 

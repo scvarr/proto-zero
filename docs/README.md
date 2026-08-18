@@ -2,7 +2,7 @@
 
 ## Current status
 - Current root line: [ADR-025 — Change Detection / First Private Memory](./25-adr/ADR-025-change-detection-first-memory.md) is implemented and laboratory-verified.
-- Current next step: [ADR-026 — First Internal Dynamic Coordinate (`drive_0`)](./26-adr/ADR-026-first-internal-drive.md) (accepted, implementation pending).
+- [ADR-026 — First Internal Dynamic Coordinate (`drive_0`)](./26-adr/ADR-026-first-internal-drive.md) is implemented and laboratory-verified.
 
 ## Core docs
 - [Glossary](./01-glossary.md)
