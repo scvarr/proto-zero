@@ -1,41 +1,34 @@
-//! BLACK: немой, без логов/памяти.
-//! ADR-016: non-blocking сенсор, агент «дышит» — различает стимул и тишину.
-use protozero_core::drive::{FrameCounter, drive_update};
-use protozero_core::{DriveDiff, SensorEvent, run_sensor_loop};
+//! BLACK: сама сущность без observability.
+//! ADR-025: одна внешняя receptor cell и одна собственная память `previous`.
+
+use memmap2::MmapOptions;
+use std::{fs::File, hint::black_box, ptr};
+
+const RECEPTOR_PATH: &str = "/receptor/cell";
 
 fn main() {
-    let mut d_global = 0.0;
-    let mut d_global_diff = DriveDiff::new();
+    let file = File::open(RECEPTOR_PATH).expect("failed to open receptor cell");
+    let receptor = MmapOptions::new()
+        .len(1)
+        .map_raw_read_only(&file)
+        .expect("failed to map receptor cell");
 
-    let mut frame = FrameCounter::new();
-    let mut d_frame_prev: f64 = 0.0;
+    let receptor_ptr = receptor.as_ptr();
+    let mut previous: Option<u8> = None;
 
-    let _ = run_sensor_loop(|event: SensorEvent| {
-        match event {
-            SensorEvent::Data(chunk) => {
-                for &b in chunk {
-                    if b == b'\n' {
-                        frame.on_boundary();
-                        d_frame_prev = 0.0;
-                        continue;
-                    }
+    loop {
+        // Ячейка может быть изменена другим процессом в любой момент.
+        // Volatile-read не позволяет компилятору заменить повторные чтения кешированным значением.
+        let current = unsafe { ptr::read_volatile(receptor_ptr) };
 
-                    // глобальная динамика
-                    d_global = drive_update(d_global);
-                    let _dg = d_global_diff.step(d_global);
+        if let Some(previous_value) = previous {
+            let changed = current != previous_value;
 
-                    // покадровая динамика
-                    let d_frame = frame.on_event();
-                    let _df_delta = d_frame - d_frame_prev;
-                    d_frame_prev = d_frame;
-
-                    let _ = (&d_global, &_dg, &d_frame, &_df_delta);
-                }
-            }
-            SensorEvent::Silence => {
-                // Тишина: агент наблюдает отсутствие стимула.
-                // Пока — только фиксируем факт. Decay будет в следующем ADR.
-            }
+            // BLACK ничего не публикует. black_box сохраняет само эфемерное вычисление
+            // от удаления оптимизатором, не превращая changed в состояние агента.
+            let _ = black_box(changed);
         }
-    });
+
+        previous = Some(current);
+    }
 }
