@@ -16,23 +16,29 @@
     },
     {
       "type":"timeseries",
+      "title":"drive_0",
+      "targets":[{"expr":"protozero_drive_0","refId":"A"}],
+      "gridPos":{"h":8,"w":24,"x":0,"y":9}
+    },
+    {
+      "type":"timeseries",
       "title":"Detected changes",
       "targets":[{"expr":"protozero_changes_total","refId":"A"}],
-      "gridPos":{"h":8,"w":12,"x":0,"y":9}
+      "gridPos":{"h":8,"w":12,"x":0,"y":17}
     },
     {
       "type":"timeseries",
       "title":"Reads",
       "targets":[{"expr":"protozero_reads_total","refId":"A"}],
-      "gridPos":{"h":8,"w":12,"x":12,"y":9}
+      "gridPos":{"h":8,"w":12,"x":12,"y":17}
     }
   ],
   "schemaVersion":39,
   "style":"dark",
-  "tags":["protozero","adr-025"],
+  "tags":["protozero","adr-026"],
   "time":{"from":"now-15m","to":"now"},
   "timepicker":{},
   "timezone":"",
-  "title":"Proto-Zero — ADR-025",
-  "version":2
+  "title":"Proto-Zero — ADR-026",
+  "version":3
 }

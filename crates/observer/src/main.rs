@@ -34,6 +34,7 @@ struct ChangeRecord {
     ts_ms: u64,
     previous: u8,
     current: u8,
+    drive_0_after: f64,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -48,6 +49,7 @@ struct WhiteSnapshot {
     current: Option<u8>,
     previous: Option<u8>,
     last_comparison: Option<ComparisonSnapshot>,
+    drive_0: f64,
     reads_total: u64,
     changes_total: u64,
     recent_changes: Vec<ChangeRecord>,
@@ -67,6 +69,7 @@ struct ObserverEvent {
     from: u8,
     to: u8,
     seq: Option<u64>,
+    drive_0_after: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -193,6 +196,7 @@ async fn world_cell_handler(
         from: before.value,
         to: applied.value,
         seq: None,
+        drive_0_after: None,
     });
 
     Ok(Json(applied))
@@ -254,6 +258,7 @@ async fn run_poll(state: AppState) {
                 from: change.previous,
                 to: change.current,
                 seq: Some(change.seq),
+                drive_0_after: Some(change.drive_0_after),
             });
         }
     }

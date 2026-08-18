@@ -1,5 +1,5 @@
 //! WHITE: анатомический двойник BLACK + внешняя лабораторная instrumentation.
-//! ADR-025: анатомия остаётся `receptor -> compare with previous -> previous = current`.
+//! ADR-026: обнаруженное изменение увеличивает внутреннюю координату `drive_0` на `1.0`.
 
 mod metrics;
 
@@ -32,6 +32,7 @@ fn main() {
 
     let receptor_cell = unsafe { AtomicU8::from_ptr(receptor.as_mut_ptr()) };
     let mut previous: Option<u8> = None;
+    let mut drive_0: f64 = 0.0;
 
     loop {
         let current = receptor_cell.load(Ordering::Relaxed);
@@ -39,7 +40,12 @@ fn main() {
 
         if let Some(previous_value) = previous {
             let changed = current != previous_value;
-            metrics::record_comparison(previous_value, current, changed);
+
+            if changed {
+                drive_0 += 1.0;
+            }
+
+            metrics::record_comparison(previous_value, current, changed, drive_0);
         }
 
         previous = Some(current);

@@ -122,8 +122,8 @@
   <section class="hero">
     <h1>Proto-Zero Observer</h1>
     <div class="subtitle">
-      Лабораторное наблюдение ADR-025. World меняет одну внешнюю ячейку; White показывает,
-      какие различия реально появились в доступной агенту последовательности наблюдений.
+      Лабораторное наблюдение ADR-026. World меняет одну внешнюю ячейку; White показывает
+      обнаруженные различия и внутреннюю координату drive_0, которая изменяется вследствие них.
     </div>
   </section>
 
@@ -144,6 +144,7 @@
       <div class="metrics">
         <div class="metric"><div class="label">current read</div><div class="value" id="current">-</div></div>
         <div class="metric"><div class="label">agent previous</div><div class="value" id="previous">-</div></div>
+        <div class="metric"><div class="label">drive_0</div><div class="value" id="drive0">-</div></div>
         <div class="metric"><div class="label">last changed</div><div class="value" id="changed">-</div></div>
         <div class="metric"><div class="label">detected changes</div><div class="value" id="changesTotal">-</div></div>
         <div class="metric"><div class="label">reads</div><div class="value" id="readsTotal">-</div></div>
@@ -171,7 +172,7 @@
 <script>
   const el = Object.fromEntries([
     'worldValue','worldBits','worldForm','worldInput','worldStatus',
-    'current','previous','changed','changesTotal','readsTotal','agreement',
+    'current','previous','drive0','changed','changesTotal','readsTotal','agreement',
     'compare','comparePrev','compareCurrent','compareNote','timeline'
   ].map(id => [id, document.getElementById(id)]));
 
@@ -188,6 +189,7 @@
     el.worldBits.textContent = bits(world);
     el.current.textContent = white?.current ?? '-';
     el.previous.textContent = white?.previous ?? '-';
+    el.drive0.textContent = white?.drive_0 == null ? '-' : Number(white.drive_0).toFixed(1);
     el.changed.textContent = comparison == null ? '-' : (comparison.changed ? 'YES' : 'NO');
     el.changesTotal.textContent = white?.changes_total ?? '-';
     el.readsTotal.textContent = white?.reads_total?.toLocaleString?.() ?? '-';
@@ -220,7 +222,7 @@
       const transition = `${event.from} → ${event.to}`;
       const detail = event.kind === 'world_write'
         ? (event.from === event.to ? 'same value written; agent has no write event' : 'world changed receptor value')
-        : `White detected change${event.seq == null ? '' : ` #${event.seq}`}`;
+        : `White detected change${event.seq == null ? '' : ` #${event.seq}`} · drive_0 = ${event.drive_0_after ?? '-'}`;
       row.innerHTML = `<div class="kind">${event.kind.replace('_',' ')}</div><div>${transition}</div><div><div>${ts}</div><div class="meta">${detail}</div></div>`;
       el.timeline.appendChild(row);
     });

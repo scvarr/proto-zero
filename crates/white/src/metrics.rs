@@ -26,6 +26,7 @@ static LAST_COMPARISON_CHANGED: AtomicBool = AtomicBool::new(false);
 
 static READS_TOTAL: AtomicU64 = AtomicU64::new(0);
 static CHANGES_TOTAL: AtomicU64 = AtomicU64::new(0);
+static DRIVE_0_BITS: AtomicU64 = AtomicU64::new(0);
 
 static RECENT_CHANGES: LazyLock<Mutex<VecDeque<ChangeRecord>>> =
     LazyLock::new(|| Mutex::new(VecDeque::with_capacity(MAX_RECENT_CHANGES)));
@@ -36,6 +37,7 @@ pub struct ChangeRecord {
     pub ts_ms: u64,
     pub previous: u8,
     pub current: u8,
+    pub drive_0_after: f64,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -50,6 +52,7 @@ pub struct LabSnapshot {
     pub current: Option<u8>,
     pub previous: Option<u8>,
     pub last_comparison: Option<ComparisonSnapshot>,
+    pub drive_0: f64,
     pub reads_total: u64,
     pub changes_total: u64,
     pub recent_changes: Vec<ChangeRecord>,
@@ -61,7 +64,8 @@ pub fn record_read(current: u8) {
     READS_TOTAL.fetch_add(1, Ordering::Relaxed);
 }
 
-pub fn record_comparison(previous: u8, current: u8, changed: bool) {
+pub fn record_comparison(previous: u8, current: u8, changed: bool, drive_0: f64) {
+    DRIVE_0_BITS.store(drive_0.to_bits(), Ordering::Relaxed);
     LAST_COMPARISON_PREVIOUS.store(previous, Ordering::Relaxed);
     LAST_COMPARISON_CURRENT.store(current, Ordering::Relaxed);
     LAST_COMPARISON_CHANGED.store(changed, Ordering::Relaxed);
@@ -77,6 +81,7 @@ pub fn record_comparison(previous: u8, current: u8, changed: bool) {
         ts_ms: now_ms(),
         previous,
         current,
+        drive_0_after: drive_0,
     };
 
     let mut changes = RECENT_CHANGES.lock().expect("recent changes lock poisoned");
@@ -131,6 +136,8 @@ async fn metrics_handler() -> String {
             "protozero_last_changed {last_changed}\n",
             "# TYPE protozero_comparison_exists gauge\n",
             "protozero_comparison_exists {comparison_exists}\n",
+            "# TYPE protozero_drive_0 gauge\n",
+            "protozero_drive_0 {drive_0}\n",
             "# TYPE protozero_reads_total counter\n",
             "protozero_reads_total {reads_total}\n",
             "# TYPE protozero_changes_total counter\n",
@@ -141,6 +148,7 @@ async fn metrics_handler() -> String {
         previous_exists = previous_exists,
         last_changed = last_changed,
         comparison_exists = comparison_exists,
+        drive_0 = snapshot.drive_0,
         reads_total = snapshot.reads_total,
         changes_total = snapshot.changes_total,
     )
@@ -170,6 +178,7 @@ fn snapshot() -> LabSnapshot {
         current,
         previous,
         last_comparison,
+        drive_0: f64::from_bits(DRIVE_0_BITS.load(Ordering::Relaxed)),
         reads_total: READS_TOTAL.load(Ordering::Relaxed),
         changes_total: CHANGES_TOTAL.load(Ordering::Relaxed),
         recent_changes,
